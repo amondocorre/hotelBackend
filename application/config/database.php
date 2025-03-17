@@ -75,10 +75,10 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
-	'hostname' => '67.225.151.112',
-	'username' => 'vanguard_admin',
-	'password' => 'Ariana.2107',
-	'database' => 'vanguard_BDVentas',
+	'hostname' => 'localhost',
+	'username' => '',
+	'password' => '',
+	'database' => '',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
 	'pconnect' => FALSE,
