@@ -75,7 +75,7 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
-	'hostname' => '67.225.151.112',
+  'hostname' => '67.225.151.112',
 	'username' => 'vanguard_admin_hotel',
 	'password' => 'Hotel.hackers.',
 	'database' => 'vanguard_Hotel',
