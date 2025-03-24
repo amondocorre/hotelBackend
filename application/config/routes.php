@@ -54,3 +54,4 @@ $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 $route['api/login'] = 'UserController/login';
 $route['api/logout'] = 'UserController/logout';
+$route['api/getMenuAccess'] = 'UserController/getMenuAccess';

@@ -9,13 +9,13 @@ class JWTHandler {
 
     public function encode($payload) {
       $payload['iat'] = time(); 
-      $payload['exp'] = time() + 3600;
+      $payload['exp'] = time() + 360000000;
       return JWT::encode($payload,$this->secret_key, 'HS256');
     }
     public function decode($jwt) {
         try {
-            $decoded = JWT::decode($jwt, $this->secret_key, array('HS256'));
-            return $decoded;
+          $decoded = JWT::decode($jwt, $this->secret_key,['HS256']);
+          return $decoded;
         } catch (Exception $e) {
             return false;
         }

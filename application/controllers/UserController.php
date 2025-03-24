@@ -3,9 +3,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class UserController extends CI_Controller {
     public function __construct() {
         parent::__construct();
-        $this->load->model('User_model');
-        $this->load->model('Usuario_model');
-        $this->load->library('JWTHandler');
+        $this->load->database(); 
+        $this->load->model('auth/User_model');
+        $this->load->model('auth/Usuario_model');
+        $this->load->model('auth/AccessMenu_model');
     }
     public function index() {
       echo 'Hello from UserController!';
@@ -48,7 +49,7 @@ class UserController extends CI_Controller {
       if (!$user) {
           return _send_json_response($this, 401, ['message' => 'Incorrect username/password']);
       }
-      if (!$user->activo) {
+      if (!$user->estado) {
           return _send_json_response($this, 403, ['message' => 'Inactive account. Access denied']);
       }
       if (!password_verify($password, $user->password_hash)) {
@@ -67,6 +68,16 @@ class UserController extends CI_Controller {
         return;
       }
       $response = ['message' => 'success','data'=>$res];
+      return _send_json_response($this, 200, $response);
+    }
+    public function getMenuAccess(){
+      $res = verifyTokenAccess();
+      if(!$res){
+        return;
+      }
+      
+      $access = $this->AccessMenu_model->findAllIdUser(0);
+      $response = ['message' => 'success','menu'=>$access];
       return _send_json_response($this, 200, $response);
     }
 }

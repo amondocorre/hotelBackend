@@ -35,6 +35,7 @@ if (!function_exists('verifyTokenAccess')) {
             }
             return _send_unauthorized_response($CI, 'Token inválido o expirado');
         } catch (Exception $e) {
+          var_dump($e);
             return _send_unauthorized_response($CI, 'Token inválido o expirado');
         }
     }

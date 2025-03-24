@@ -2,7 +2,7 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 class User_model extends CI_Model {
-    protected $table = 'usuario'; // Tabla asociada al modelo
+    protected $table = 'usuarios'; // Tabla asociada al modelo
     public function __construct() {
         parent::__construct();
     }
@@ -33,8 +33,8 @@ class User_model extends CI_Model {
         $user->password_hash ='$2y$10$plLOGQNVtpnl1XlR9tOU4eam88M/Td9hKNb3JBwHAyBbaRm2W/qwe'; 
         $user->user_name ='testt'; 
         $user->nombres ='test' ;
-        $user->activo =1;
-        return $user;// $this->db->get_where($this->table, ['username' => $username])->row();
+        $user->estado =1;
+        return $this->db->get_where($this->table, ['usuario' => $username])->row();
     }
 }/*
 <?php
