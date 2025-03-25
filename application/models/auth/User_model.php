@@ -3,99 +3,112 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class User_model extends CI_Model {
     protected $table = 'usuarios'; // Tabla asociada al modelo
+
     public function __construct() {
         parent::__construct();
+        $this->load->library('form_validation'); // Cargar la librería de validación de formularios
     }
+
     // Encuentra un usuario por ID
     public function findIdentity($id) {
-        return $this->db->get_where($this->table, ['id' => $id])->row();
+        return $this->db->get_where($this->table, ['id_usuario' => $id])->row();
     }
-    // Encuentra un usuario por token de acceso
+
+    // Encuentra un usuario por token de acceso (si lo usas)
     public function findIdentityByAccessToken($token) {
         $user = $this->db->get_where($this->table, ['access_token' => $token])->row();
         if ($user) {
             $user->access_token = null;
             return $user;
         }
-        return null; // Si no se encuentra, retorna null
+        return null;
     }
+
     // Obtiene el ID del usuario (este método puede estar en un controlador en lugar de aquí)
     public function getId($user) {
-        return $user->id ?? null;
+        return $user->id_usuario ?? null;
     }
+
     // Valida contraseña
     public function validatePassword($password, $passwordHash) {
         return password_verify($password, $passwordHash);
     }
+
     // Encuentra un usuario por nombre de usuario
     public function findByUsername($username) {
-        $user = new stdClass();
-        $user->password_hash ='$2y$10$plLOGQNVtpnl1XlR9tOU4eam88M/Td9hKNb3JBwHAyBbaRm2W/qwe'; 
-        $user->user_name ='testt'; 
-        $user->nombres ='test' ;
-        $user->estado =1;
         return $this->db->get_where($this->table, ['usuario' => $username])->row();
     }
-}/*
-<?php
-defined('BASEPATH') OR exit('No direct script access allowed');
-
-class UserController extends CI_Controller {
-
-    public function __construct() {
-        parent::__construct();
-        $this->load->model('User_model');
-        $this->load->library('jwt'); // Biblioteca para manejar JWT (debe incluirse)
-    }
-
-    public function login() {
-        // Obtener los datos enviados en el cuerpo de la solicitud
-        $body = json_decode(file_get_contents('php://input'), true);
-        $email = isset($body['email']) ? $body['email'] : null;
-        $password = isset($body['password']) ? $body['password'] : null;
-        // Buscar usuario por email
-        $userFound = $this->User_model->findByEmail($email);
-        if (!$userFound) {
-            $this->output
-                ->set_status_header(404)
-                ->set_content_type('application/json')
-                ->set_output(json_encode(['message' => 'El email no existe']));
-            return;
+    public function create($data) {
+        $data['password'] = 'admin';
+        if (!$this->validate_user_data($data)) {
+            return FALSE; 
         }
-        // Validar la contraseña
-        if (!password_verify($password, $userFound->password)) {
-            $this->output
-                ->set_status_header(403)
-                ->set_content_type('application/json')
-                ->set_output(json_encode(['message' => 'La contraseña es incorrecta']));
-            return;
-        }
-        // Obtener roles del usuario (dependiendo de cómo se relacionen los roles)
-        $roles = $this->User_model->getRoles($userFound->id); // Supongamos que es un método adicional
-        $rolesIds = array_map(function($role) {
-            return $role['id'];
-        }, $roles);
-
-        // Crear el payload para el token
-        $payload = [
-            'id' => $userFound->id,
-            'name' => $userFound->name,
-            'roles' => $rolesIds,
-            'iat' => time(), // Fecha de emisión
-            'exp' => time() + 3600 // Expiración (1 hora)
-        ];
-        $token = $this->jwt->encode($payload, 'TU_CLAVE_SECRETA'); // Asegúrate de incluir una clave segura
-
-        // Preparar la respuesta
-        unset($userFound->password); // Eliminar la contraseña del objeto usuario
-        $data = [
-            'user' => $userFound,
-            'token' => 'Bearer ' . $token
-        ];
-
-        $this->output
-            ->set_content_type('application/json')
-            ->set_output(json_encode($data));
+        $data['password_hash'] = password_hash($data['password'], PASSWORD_DEFAULT);
+        unset($data['password']);
+        $this->db->insert($this->table, $data);
+        return $this->db->insert_id();
     }
+    public function update($id, $data) {
+      if (!$this->validate_user_data($data, true)) {
+          return FALSE;
+      }
+      $this->db->where('id_usuario', $id);
+      return $this->db->update($this->table, $data);
+    }
+    public function updateFoto($url,$id){
+      $this->db->where('id_usuario', $id);
+      return $this->db->update($this->table, ['foto'=>$url]);
+    }
+    public function createAccessUser($id_usuario,$id_perfil){
+      $this->db->select("id_acceso, estado, $id_usuario as id_usuario");
+      $this->db->from('acceso_perfil');
+      $this->db->where('id_perfil', $id_perfil);
+      $this->db->where('estado',1);
+      $query = $this->db->get();
+      if ($query->num_rows() > 0) {
+          $accesos = $query->result_array(); 
+          if ($this->db->insert_batch('acceso_usuario', $accesos)) {
+              return true; 
+          } else {
+              return false;
+          }
+      } else {
+          return false; 
+      }
+    }
+    public function createAccessBottons($id_usuario,$id_perfil){
+      $this->db->select("id_acceso, id_boton, estado, $id_usuario as id_usuario");
+      $this->db->from('acceso_boton_perfil');
+      $this->db->where('id_perfil', $id_perfil);
+      $this->db->where('estado',1);
+      $query = $this->db->get();
+      if ($query->num_rows() > 0) {
+          $accesos = $query->result_array(); 
+          if ($this->db->insert_batch('acceso_boton_usuario', $accesos)) {
+              return true; 
+          } else {
+              return false;
+          }
+      } else {
+          return false; 
+      }
+    }
+    private function validate_user_data($data, $is_update = false) {
+      $this->form_validation->set_data($data);
+      $this->form_validation->set_rules('id_perfil', 'Perfil', 'required|max_length[20]|perfil_existe');
+      $this->form_validation->set_rules('nombre', 'Nombre', 'required|max_length[100]');
+      $this->form_validation->set_rules('email', 'Email', 'required|valid_email|max_length[100]'.($is_update ? '' : '|is_unique[usuarios.email]'));
+      $this->form_validation->set_rules('telefono', 'Teléfono', 'max_length[15]');
+      $this->form_validation->set_rules('celular', 'Celular', 'max_length[15]');
+      $this->form_validation->set_rules('estado', 'Estado', 'in_list[Activo,Inactivo]');
+      //$this->form_validation->set_rules('fecha_ingreso', 'Fecha Ingreso', 'valid_date_format[Y-m-d]');
+      //$this->form_validation->set_rules('fecha_baja', 'Fecha Baja', 'valid_date');
+      $this->form_validation->set_rules('sueldo', 'Sueldo', 'decimal');
+      $this->form_validation->set_rules('usuario', 'Usuario', 'max_length[15]' . ($is_update ? '' : '|is_unique[usuarios.usuario]'));
+      //$this->form_validation->set_rules('foto', 'Foto');
+      //$this->form_validation->set_rules('password','Contraseña','min_length[8]|regex_match[/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]).*$/]');
+
+      return $this->form_validation->run();
+  }
 }
-*/
+?>

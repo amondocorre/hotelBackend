@@ -35,7 +35,6 @@ if (!function_exists('verifyTokenAccess')) {
             }
             return _send_unauthorized_response($CI, 'Token inválido o expirado');
         } catch (Exception $e) {
-          var_dump($e);
             return _send_unauthorized_response($CI, 'Token inválido o expirado');
         }
     }
@@ -51,4 +50,60 @@ if(!function_exists('_send_unauthorized_response')){
     }
 }
 
+if (!function_exists('validate_http_method')) {
+  function validate_http_method(&$CI, $allowed_methods) {
+      $method = $CI->input->server('REQUEST_METHOD');
+      if (!in_array($method, $allowed_methods)) {
+          _send_json_response($CI, 405, ['message' => 'Método no permitido']);
+          return false;
+      }
+      return true;
+  }
+}
+if(!function_exists('getDirectorio')){
+	function getDirectorio(){
+		$nombreCarpeta =  explode('/',$_SERVER['REQUEST_URI'])[1];
+		$ruta = $_SERVER['DOCUMENT_ROOT']."/".$nombreCarpeta."/" ;
+		if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS']) {
+			$ruta = $_SERVER['DOCUMENT_ROOT']."/";
+		}
+		return $ruta;
+	}
+}
+if(!function_exists('getHttpHost')){
+	function getHttpHost(){
+		$nombreCarpeta =  explode('/',$_SERVER['REQUEST_URI'])[1];
+		$url = "http://" .$_SERVER['HTTP_HOST']."/".$nombreCarpeta."/" ;
+		if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS']) {
+			$url = "https://" .$_SERVER['HTTP_HOST']."/";
+		}
+		return $url;
+	}
+}
+if (!function_exists('perfil_existe')) {
+  function perfil_existe($id_perfil) {
+      $CI =& get_instance();
+      $CI->db->where('id', $id_perfil);
+      $query = $CI->db->get('perfiles');
+      return $query->num_rows() > 0;
+  }
+}
 
+if(!function_exists('guardarArchivo')){
+	function guardarArchivo($nombre,$file,$direcion)
+	{
+		$url = getHttpHost();
+    $ruta = getDirectorio();
+    $fileTmpPath = $file['tmp_name'];
+    $fileName = $file['name'];
+    $fileType = $file['type'];
+    $ext = pathinfo($fileName, PATHINFO_EXTENSION) ;
+    $destinationPath = $ruta.'/'.$direcion.'/'.$nombre.'.'.$ext;
+    if (move_uploaded_file($fileTmpPath, $destinationPath)) {
+        return $direcion.'/'.$nombre.'.'.$ext;
+    } else {
+        return false;
+    }
+
+	}
+}

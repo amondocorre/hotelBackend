@@ -55,3 +55,5 @@ $route['translate_uri_dashes'] = FALSE;
 $route['api/login'] = 'UserController/login';
 $route['api/logout'] = 'UserController/logout';
 $route['api/getMenuAccess'] = 'UserController/getMenuAccess';
+$route['api/user/create_user'] = 'UserController/create_user';
+$route['api/user/update_user/(:num)'] = 'UserController/update_user/$1';
