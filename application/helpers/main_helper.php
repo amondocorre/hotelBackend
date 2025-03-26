@@ -104,6 +104,24 @@ if(!function_exists('guardarArchivo')){
     } else {
         return false;
     }
-
 	}
+  if (!function_exists('email_unique_current')) {
+    function email_unique_current($email, $user_id) {
+        $CI =& get_instance();
+        $CI->db->where('email', $email);
+        $CI->db->where('id_usuario !=', $user_id);
+        $query = $CI->db->get('usuarios');
+        return $query->num_rows() === 0; 
+    }
+  }
+  if (!function_exists('usuario_unique_current')) {
+    function usuario_unique_current($usuario, $user_id) {
+      $CI =& get_instance();
+      var_dump($usuario, $user_id);
+      $CI->db->where('usuario', $usuario);
+      $CI->db->where('id_usuario !=', $user_id); 
+      $query = $CI->db->get('usuarios');
+      return $query->num_rows() === 0; 
+    }
+  }
 }

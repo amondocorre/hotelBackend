@@ -44,60 +44,85 @@ class UserController extends CI_Controller {
         $response = ['status' => 'error', 'message' =>  array_values($this->form_validation->error_array())];
         return _send_json_response($this, 400, $response);
       }
-  }
-  public function update_user($id) {
-      if (!validate_http_method($this, ['PUT',])) {
-        return; 
+    }
+    public function update_user($id) {
+        if (!validate_http_method($this, ['POST'])) {
+          return; 
+        }
+        $data = $this->input->post();
+        $file = $_FILES['file']??null;
+        $id_perfil_ant = isset($data['id_perfil_ant'])?$data['id_perfil_ant']:null;
+        unset($data['id_perfil_ant']);
+        if ($this->User_model->update($id, $data)) {
+            if($file){
+              $url = guardarArchivo($id,$file,'assets/user/');
+              if(!$url){
+                $response = ['status' => 'success','message'=>'Ocurrio un error al guardar la foto.'];
+                return _send_json_response($this, 200, $response);
+              }
+              $this->User_model->updateFoto($url,$id);
+            }
+            if(!empty($id_perfil_ant) && $id_perfil_ant !== $data['id_perfil']){
+              if(!$this->User_model->desactiveAccessUser($id,$id_perfil_ant)){
+                //return;
+              }
+              if(!$this->User_model->desactiveAccessBottons($id,$id_perfil_ant)){
+                //return;
+              }
+              if(!$this->User_model->addAccessUser($id,$data['id_perfil'])){
+                //return;
+              }
+              if(!$this->User_model->addAccessBottons($id,$data['id_perfil'])){
+                //return;
+              }
+            }
+            $response = ['status' => 'success','message'=>'Usuario actualizado con éxito.'];
+            return _send_json_response($this, 200, $response);
+        } else {//echo validation_errors(); 
+          $response = ['status' => 'error', 'message' =>  array_values($this->form_validation->error_array())];
+          return _send_json_response($this, 400, $response);
+        }
+    }
+    public function login() {
+      $body = json_decode(file_get_contents('php://input'), true);
+      $username = isset($body['username']) ? $body['username'] : null; // Corregido el nombre del campo
+      $password = isset($body['password']) ? $body['password'] : null;
+      if (!$username || !$password) {
+          return _send_json_response($this, 400, ['message' => 'Username and password are required']);
       }
-      $data = $this->input->post();
-      if ($this->User_model->update($id, $data)) {
-          $response = ['status' => 'success','message'=>'Usuario actualizado con éxito.'];
-          return _send_json_response($this, 200, $response);
-      } else {//echo validation_errors(); 
-        $response = ['status' => 'error', 'message' =>  array_values($this->form_validation->error_array())];
-        return _send_json_response($this, 400, $response);
+      $user = $this->User_model->findByUsername($username);
+      if (!$user) {
+          return _send_json_response($this, 401, ['message' => 'Incorrect username/password']);
       }
-  }
-  public function login() {
-    $body = json_decode(file_get_contents('php://input'), true);
-    $username = isset($body['username']) ? $body['username'] : null; // Corregido el nombre del campo
-    $password = isset($body['password']) ? $body['password'] : null;
-    if (!$username || !$password) {
-        return _send_json_response($this, 400, ['message' => 'Username and password are required']);
-    }
-    $user = $this->User_model->findByUsername($username);
-    if (!$user) {
-        return _send_json_response($this, 401, ['message' => 'Incorrect username/password']);
-    }
-    if (!$user->estado) {
-        return _send_json_response($this, 403, ['message' => 'Inactive account. Access denied']);
-    }
-    if (!password_verify($password, $user->password_hash)) {
-        return _send_json_response($this, 401, ['message' => 'Incorrect username/password']);
-    }
-    unset($user->password_hash);
-    $payload = ['user' => $user];
-    $token = $this->jwthandler->encode($payload);
-    $data = ['user' => $user, 'token' => $token];
+      if (!$user->estado) {
+          return _send_json_response($this, 403, ['message' => 'Inactive account. Access denied']);
+      }
+      if (!password_verify($password, $user->password_hash)) {
+          return _send_json_response($this, 401, ['message' => 'Incorrect username/password']);
+      }
+      unset($user->password_hash);
+      $payload = ['user' => $user];
+      $token = $this->jwthandler->encode($payload);
+      $data = ['user' => $user, 'token' => $token];
 
-    return _send_json_response($this, 200, $data);
-  }
-  public function logout(){
-    $res = verifyTokenAccess();
-    if(!$res){
-      return;
+      return _send_json_response($this, 200, $data);
     }
-    $response = ['message' => 'success','data'=>$res];
-    return _send_json_response($this, 200, $response);
-  }
-  public function getMenuAccess(){
-    $res = verifyTokenAccess();
-    if(!$res){
-      return;
+    public function logout(){
+      $res = verifyTokenAccess();
+      if(!$res){
+        return;
+      }
+      $response = ['message' => 'success','data'=>$res];
+      return _send_json_response($this, 200, $response);
     }
-    
-    $access = $this->AccessMenu_model->findAllIdUser(0);
-    $response = ['message' => 'success','menu'=>$access];
-    return _send_json_response($this, 200, $response);
-  }
+    public function getMenuAccess(){
+      $res = verifyTokenAccess();
+      if(!$res){
+        return;
+      }
+      
+      $access = $this->AccessMenu_model->findAllIdUser(0);
+      $response = ['message' => 'success','menu'=>$access];
+      return _send_json_response($this, 200, $response);
+    }
 }

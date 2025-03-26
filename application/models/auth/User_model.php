@@ -39,18 +39,21 @@ class User_model extends CI_Model {
         return $this->db->get_where($this->table, ['usuario' => $username])->row();
     }
     public function create($data) {
-        $data['password'] = 'admin';
+        $data['password_hash'] = 'admin';
         if (!$this->validate_user_data($data)) {
             return FALSE; 
         }
-        $data['password_hash'] = password_hash($data['password'], PASSWORD_DEFAULT);
-        unset($data['password']);
+        $data['password_hash'] = password_hash($data['password_hash'], PASSWORD_DEFAULT);
+        unset($data['password_hash']);
         $this->db->insert($this->table, $data);
         return $this->db->insert_id();
     }
     public function update($id, $data) {
-      if (!$this->validate_user_data($data, true)) {
+      if (!$this->validate_user_data($data, $id)) {
           return FALSE;
+      }
+      if(isset($data['password_hash'])){
+        unset($data['password_hash']);
       }
       $this->db->where('id_usuario', $id);
       return $this->db->update($this->table, $data);
@@ -59,52 +62,94 @@ class User_model extends CI_Model {
       $this->db->where('id_usuario', $id);
       return $this->db->update($this->table, ['foto'=>$url]);
     }
-    public function createAccessUser($id_usuario,$id_perfil){
+    public function findAccesUser($id_usuario,$id_acces) {
+      $this->db->where('id_acceso', $id_acces);
+      $this->db->where('id_usuario', $id_usuario);
+      return $this->db->get_where('acceso_usuario')->row();
+    }
+    public function findBotonAccesUser($id_usuario,$id_acces,$id_boton) {
+      $this->db->where('id_acceso', $id_acces);
+      $this->db->where('id_usuario', $id_usuario);
+      $this->db->where('id_boton', $id_boton);
+      return $this->db->get_where('acceso_boton_usuario')->row();
+    }
+    public function addAccessUser($id_usuario,$id_perfil){
       $this->db->select("id_acceso, estado, $id_usuario as id_usuario");
       $this->db->from('acceso_perfil');
       $this->db->where('id_perfil', $id_perfil);
       $this->db->where('estado',1);
       $query = $this->db->get();
       if ($query->num_rows() > 0) {
-          $accesos = $query->result_array(); 
-          if ($this->db->insert_batch('acceso_usuario', $accesos)) {
-              return true; 
-          } else {
-              return false;
-          }
+          $accesos = $query->result_array();
+          $stateAcces = false;
+          foreach($accesos as $key=>$acceso){
+            if($this->findAccesUser($id_usuario,($acceso['id_acceso'])) ){
+              $this->db->where('id_acceso', $acceso['id_acceso']);
+              $this->db->where('id_usuario', $id_usuario);
+              $stateAcces = $this->db->update('acceso_usuario', 'estado',1);
+            }else{
+              $stateAcces = $this->db->insert('acceso_usuario', $acceso);
+            }
+          } 
+          return $stateAcces;
       } else {
           return false; 
       }
     }
-    public function createAccessBottons($id_usuario,$id_perfil){
+    public function addAccessBottons($id_usuario,$id_perfil){
       $this->db->select("id_acceso, id_boton, estado, $id_usuario as id_usuario");
       $this->db->from('acceso_boton_perfil');
       $this->db->where('id_perfil', $id_perfil);
       $this->db->where('estado',1);
       $query = $this->db->get();
       if ($query->num_rows() > 0) {
-          $accesos = $query->result_array(); 
-          if ($this->db->insert_batch('acceso_boton_usuario', $accesos)) {
-              return true; 
-          } else {
-              return false;
+        $botones = $query->result_array();
+        $stateAcces = false;
+        foreach($botones as $key=>$boton){
+          if($this->findBotonAccesUser($id_usuario,$boton['id_acceso'],$boton['id_boton']) ){
+            $this->db->where('id_acceso', $boton['id_acceso']);
+            $this->db->where('id_boton', $boton['id_boton']);
+            $this->db->where('id_usuario', $id_usuario);
+            $stateAcces = $this->db->update('acceso_boton_usuario', 'estado',1);
+          }else{
+            $stateAcces = $this->db->insert('acceso_boton_usuario', $boton);
           }
+        } 
+        return $stateAcces;
       } else {
           return false; 
       }
     }
-    private function validate_user_data($data, $is_update = false) {
+    public function desactiveAccessUser($id_usuario,$id_perfil){
+      $this->db->where('id_usuario', $id_usuario);
+      $query = $this->db->update('acceso_usuario', ['estado'=>0]);
+      if ($query) {//affets_rows
+        return true;     
+      } else {
+          return false; 
+      }
+    }
+    public function desactiveAccessBottons($id_usuario,$id_perfil){
+      $this->db->where('id_usuario', $id_usuario);
+      $query=$this->db->update('acceso_boton_usuario', ['estado'=>0]);
+      if ($query) {
+        return true;     
+      } else {
+          return false; 
+      }
+    }
+    private function validate_user_data($data, $user_id = 0) {
       $this->form_validation->set_data($data);
       $this->form_validation->set_rules('id_perfil', 'Perfil', 'required|max_length[20]|perfil_existe');
       $this->form_validation->set_rules('nombre', 'Nombre', 'required|max_length[100]');
-      $this->form_validation->set_rules('email', 'Email', 'required|valid_email|max_length[100]'.($is_update ? '' : '|is_unique[usuarios.email]'));
+      $this->form_validation->set_rules('email', 'Email', 'required|valid_email|max_length[100]'.($user_id>0 ? '|email_unique_current['.$user_id.']' : '|is_unique[usuarios.email]'));
       $this->form_validation->set_rules('telefono', 'Teléfono', 'max_length[15]');
       $this->form_validation->set_rules('celular', 'Celular', 'max_length[15]');
       $this->form_validation->set_rules('estado', 'Estado', 'in_list[Activo,Inactivo]');
       //$this->form_validation->set_rules('fecha_ingreso', 'Fecha Ingreso', 'valid_date_format[Y-m-d]');
       //$this->form_validation->set_rules('fecha_baja', 'Fecha Baja', 'valid_date');
       $this->form_validation->set_rules('sueldo', 'Sueldo', 'decimal');
-      $this->form_validation->set_rules('usuario', 'Usuario', 'max_length[15]' . ($is_update ? '' : '|is_unique[usuarios.usuario]'));
+      $this->form_validation->set_rules('usuario', 'Usuario', 'max_length[15]' . ($user_id>0 ? '|usuario_unique_current['.$user_id.']' : '|is_unique[usuarios.usuario]'));
       //$this->form_validation->set_rules('foto', 'Foto');
       //$this->form_validation->set_rules('password','Contraseña','min_length[8]|regex_match[/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]).*$/]');
 

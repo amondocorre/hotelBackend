@@ -40,5 +40,7 @@ $lang['form_validation_ext_in'] = 'El archivo {field} debe tener una de las sigu
 
 //validaciones perosnalizados
 $lang['perfil_existe'] = 'El perfil seleccionado no existe.';
+$lang['email_unique_current'] = 'Este correo electrónico ya está en uso por otro usuario.';
+$lang['usuario_unique_current'] = 'Este Usuario ya está en uso.';
 
 ?>
