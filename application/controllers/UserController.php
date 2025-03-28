@@ -49,6 +49,10 @@ class UserController extends CI_Controller {
         if (!validate_http_method($this, ['POST'])) {
           return; 
         }
+        $res = verifyTokenAccess();
+        if(!$res){
+          return;
+        } 
         $data = $this->input->post();
         $file = $_FILES['file']??null;
         $id_perfil_ant = isset($data['id_perfil_ant'])?$data['id_perfil_ant']:null;
@@ -123,6 +127,47 @@ class UserController extends CI_Controller {
       
       $access = $this->AccessMenu_model->findAllIdUser(0);
       $response = ['message' => 'success','menu'=>$access];
+      return _send_json_response($this, 200, $response);
+    }
+    public function getAllUsers() {
+      if (!validate_http_method($this, ['GET'])) return; 
+      $res = verifyTokenAccess();
+      if(!$res) return; 
+      $usuarios = $this->User_model->getAllUsers();
+      $data['usuarios'] = $usuarios;
+      $response = ['status' => 'success','users'=>$usuarios];
+      return _send_json_response($this, 200, $response);
+    }
+    public function setStateUser($id) {
+      if (!validate_http_method($this, ['POST'])) return; 
+      $res = verifyTokenAccess();
+      if(!$res) return; 
+      $body = json_decode(file_get_contents('php://input'), true);
+      $estado = $body['estado']??null;
+      if ($estado === null || ($estado !== 'Activo' && $estado !== 'Inactivo')) {
+        $response = ['status' => 'error', 'message' => 'El estado proporcionado no es válido. Debe ser "Activo" o "Inactivo".'];
+        return _send_json_response($this, 400, $response); 
+      }
+      if (!$this->User_model->findById($id)) {
+        $response = ['status' => 'error', 'message' => 'No se encontro el usuario.'];
+        return _send_json_response($this, 400, $response); 
+      }
+      if ($this->User_model->setUserStatus($id, $estado)) {
+          $response = ['status' => 'success', 'message' => 'Estado del usuario actualizado con éxito a ' . $estado . '.'];
+          _send_json_response($this, 200, $response);
+      } else {
+          $response = ['status' => 'error', 'message' => 'No se pudo actualizar el estado del usuario.'];
+          _send_json_response($this, 500, $response); 
+      }
+    }
+    public function getButtonsAccesUser($id_acces) {
+      if (!validate_http_method($this, ['GET'])) return; 
+      $res = verifyTokenAccess();
+      if(!$res) return; 
+      $user = $res->user;
+      $id_user = $user->id_usuario;
+      $buttons = $this->User_model->getButtonsAccesUser($id_user,$id_acces);
+      $response = ['status' => 'success','buttons'=>$buttons];
       return _send_json_response($this, 200, $response);
     }
 }

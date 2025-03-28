@@ -117,7 +117,6 @@ if(!function_exists('guardarArchivo')){
   if (!function_exists('usuario_unique_current')) {
     function usuario_unique_current($usuario, $user_id) {
       $CI =& get_instance();
-      var_dump($usuario, $user_id);
       $CI->db->where('usuario', $usuario);
       $CI->db->where('id_usuario !=', $user_id); 
       $query = $CI->db->get('usuarios');

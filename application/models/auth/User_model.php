@@ -28,15 +28,33 @@ class User_model extends CI_Model {
     public function getId($user) {
         return $user->id_usuario ?? null;
     }
-
     // Valida contraseña
     public function validatePassword($password, $passwordHash) {
         return password_verify($password, $passwordHash);
     }
-
     // Encuentra un usuario por nombre de usuario
     public function findByUsername($username) {
         return $this->db->get_where($this->table, ['usuario' => $username])->row();
+    }
+    public function findById($id) {
+      return $this->db->get_where($this->table, ['id_usuario' => $id])->row();
+    }
+    public function setUserStatus($id_usuario, $nuevo_estado) {
+      $data = array('estado' => $nuevo_estado);
+      $this->db->where('id_usuario', $id_usuario);
+      $this->db->update($this->table, $data);
+      return ($this->db->affected_rows() > 0) ; 
+  }
+    public function getAllUsers() {
+      $url = getHttpHost();
+      $campos = "id_usuario,id_perfil,nombre,email,telefono,celular,estado,fecha_ingreso,fecha_baja,sueldo,usuario,CONCAT('$url', foto) as foto,fecha_registro,ci,ext,complemento,sexo,fecha_nacimiento,direccion,ubicacion_gps";
+      $this->db->select($campos);
+      $query = $this->db->get($this->table);
+      if ($query->num_rows() > 0) {
+          return $query->result(); 
+      } else {
+          return array(); 
+      }
     }
     public function create($data) {
         $data['password_hash'] = 'admin';
@@ -154,6 +172,20 @@ class User_model extends CI_Model {
       //$this->form_validation->set_rules('password','Contraseña','min_length[8]|regex_match[/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]).*$/]');
 
       return $this->form_validation->run();
-  }
+    }
+    public function getButtonsAccesUser($id_usuario,$id_acces){
+      $this->db->select('btn.*'); 
+      $this->db->from('botones  btn'); 
+      $this->db->join('acceso_boton_usuario abu', 'abu.id_boton = btn.id_boton');
+      $this->db->where('btn.estado', 1); 
+      $this->db->where('abu.id_acceso', $id_acces); 
+      $this->db->where('abu.id_usuario', $id_usuario); 
+      $query = $this->db->get();
+      if ($query->num_rows() > 0) {
+          return $query->result(); 
+      } else {
+          return array(); 
+      }
+    }
 }
 ?>
