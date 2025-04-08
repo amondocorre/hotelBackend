@@ -3,7 +3,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class UserController extends CI_Controller {
     public function __construct() {
         parent::__construct();
-        $this->load->database(); 
         $this->load->model('auth/User_model');
         $this->load->model('auth/Usuario_model');
         $this->load->model('auth/AccessMenu_model');
@@ -32,10 +31,10 @@ class UserController extends CI_Controller {
             }
             $this->User_model->updateFoto($url,$id_usuario);
           }
-          if(!$this->User_model->createAccessUser($id_usuario,$data['id_perfil'])){
+          if(!$this->User_model->addAccessUser($id_usuario,$data['id_perfil'])){
             //return;
           }
-          if(!$this->User_model->createAccessBottons($id_usuario,$data['id_perfil'])){
+          if(!$this->User_model->addAccessBottons($id_usuario,$data['id_perfil'])){
             //return;
           }
           $response = ['status' => 'success','message'=>'Usuario creado con éxito.'];
@@ -86,6 +85,38 @@ class UserController extends CI_Controller {
           $response = ['status' => 'error', 'message' =>  array_values($this->form_validation->error_array())];
           return _send_json_response($this, 400, $response);
         }
+    }
+    public function delete($id) {
+      if (!validate_http_method($this, ['POST'])) {
+        return; 
+      }
+      $res = verifyTokenAccess();
+      if(!$res){
+        return;
+      } 
+      if ($this->User_model->delete($id)) {
+          $response = ['status' => 'success','message'=>'Usuario eliminado con éxito.'];
+          return _send_json_response($this, 200, $response);
+      } else {
+        $response = ['status' => 'error', 'message' =>  array_values($this->form_validation->error_array())];
+        return _send_json_response($this, 400, $response);
+      }
+    }
+    public function active($id) {
+      if (!validate_http_method($this, ['POST'])) {
+        return; 
+      }
+      $res = verifyTokenAccess();
+      if(!$res){
+        return;
+      } 
+      if ($this->User_model->active($id)) {
+          $response = ['status' => 'success','message'=>'Usuario activado con éxito.'];
+          return _send_json_response($this, 200, $response);
+      } else {
+        $response = ['status' => 'error', 'message' =>  array_values($this->form_validation->error_array())];
+        return _send_json_response($this, 400, $response);
+      }
     }
     public function login() {
       $body = json_decode(file_get_contents('php://input'), true);

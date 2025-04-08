@@ -42,6 +42,3 @@ class Auth extends CI_Controller {
         }
     }
 }
-
-
-venta abierta

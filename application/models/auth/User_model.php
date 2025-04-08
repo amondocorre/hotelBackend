@@ -47,8 +47,9 @@ class User_model extends CI_Model {
   }
     public function getAllUsers() {
       $url = getHttpHost();
-      $campos = "id_usuario,id_perfil,nombre,email,telefono,celular,estado,fecha_ingreso,fecha_baja,sueldo,usuario,CONCAT('$url', foto) as foto,fecha_registro,ci,ext,complemento,sexo,fecha_nacimiento,direccion,ubicacion_gps";
+      $campos = "id_usuario,usuarios.id_perfil,perfiles.nombre as perfil,usuarios.nombre,email,telefono,celular,usuarios.estado,fecha_ingreso,fecha_baja,sueldo,usuario,CONCAT('$url', foto) as foto,fecha_registro,ci,ext,complemento,sexo,fecha_nacimiento,direccion,ubicacion_gps";
       $this->db->select($campos);
+      $this->db->join('perfiles', 'usuarios.id_perfil = perfiles.id', 'left'); 
       $query = $this->db->get($this->table);
       if ($query->num_rows() > 0) {
           return $query->result(); 
@@ -62,7 +63,8 @@ class User_model extends CI_Model {
             return FALSE; 
         }
         $data['password_hash'] = password_hash($data['password_hash'], PASSWORD_DEFAULT);
-        unset($data['password_hash']);
+        unset($data['foto']);
+      //unset($data['password_hash']);
         $this->db->insert($this->table, $data);
         return $this->db->insert_id();
     }
@@ -73,8 +75,17 @@ class User_model extends CI_Model {
       if(isset($data['password_hash'])){
         unset($data['password_hash']);
       }
+      unset($data['foto']);
       $this->db->where('id_usuario', $id);
       return $this->db->update($this->table, $data);
+    }
+    public function delete($id) {
+      $this->db->where('id_usuario', $id);
+      return $this->db->update($this->table, ['estado'=>'Inactivo']);
+    }
+    public function active($id) {
+      $this->db->where('id_usuario', $id);
+      return $this->db->update($this->table, ['estado'=>'Activo']);
     }
     public function updateFoto($url,$id){
       $this->db->where('id_usuario', $id);
@@ -166,7 +177,7 @@ class User_model extends CI_Model {
       $this->form_validation->set_rules('estado', 'Estado', 'in_list[Activo,Inactivo]');
       //$this->form_validation->set_rules('fecha_ingreso', 'Fecha Ingreso', 'valid_date_format[Y-m-d]');
       //$this->form_validation->set_rules('fecha_baja', 'Fecha Baja', 'valid_date');
-      $this->form_validation->set_rules('sueldo', 'Sueldo', 'decimal');
+      //$this->form_validation->set_rules('sueldo', 'Sueldo', 'decimal');
       $this->form_validation->set_rules('usuario', 'Usuario', 'max_length[15]' . ($user_id>0 ? '|usuario_unique_current['.$user_id.']' : '|is_unique[usuarios.usuario]'));
       //$this->form_validation->set_rules('foto', 'Foto');
       //$this->form_validation->set_rules('password','Contraseña','min_length[8]|regex_match[/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]).*$/]');
@@ -178,6 +189,7 @@ class User_model extends CI_Model {
       $this->db->from('botones  btn'); 
       $this->db->join('acceso_boton_usuario abu', 'abu.id_boton = btn.id_boton');
       $this->db->where('btn.estado', 1); 
+      $this->db->where('abu.estado', 1); 
       $this->db->where('abu.id_acceso', $id_acces); 
       $this->db->where('abu.id_usuario', $id_usuario); 
       $query = $this->db->get();
