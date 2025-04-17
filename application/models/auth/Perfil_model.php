@@ -16,25 +16,33 @@ class Perfil_model extends CI_Model {
     public function findAll() {
       return $this->db->get($this->table)->result();
   }
-    public function getPerfil(){
-      $this->db->select('id,nombre'); 
-      $this->db->from($this->table); 
-      $this->db->where('estado', 1); 
-      $query = $this->db->get();
-      if ($query->num_rows() > 0) {
-          return $query->result(); 
-      } else {
-          return array(); 
-      }
+  public function getPerfil(){
+    $this->db->select('id,nombre'); 
+    $this->db->from($this->table); 
+    $this->db->where('estado', 1); 
+    $query = $this->db->get();
+    if ($query->num_rows() > 0) {
+        return $query->result(); 
+    } else {
+        return array(); 
     }
-    public function create($data) {
-      if (!$this->validate_pefil_data($data)) {
-          return FALSE; 
-      }
-      $data['estado'] = '1';
-      return $this->db->insert($this->table, $data);
-      //return $this->db->insert_id();
+  }
+  public function create($data) {
+    if (!$this->validate_pefil_data($data)) {
+        return FALSE; 
     }
+    $data['estado'] = '1';
+    return $this->db->insert($this->table, $data);
+    //return $this->db->insert_id();
+  }
+  public function delete($id) {
+    $this->db->where('id', $id);
+    return $this->db->update($this->table, ['estado'=>0]);
+  }
+  public function activate($id) {
+    $this->db->where('id', $id);
+    return $this->db->update($this->table, ['estado'=>'1']);
+  }
   public function update($id, $data) {
     if (!$this->validate_pefil_data($data, $id)) {
         return FALSE;

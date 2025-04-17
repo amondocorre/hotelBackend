@@ -58,7 +58,7 @@ $route['api/getMenuAccess'] = 'UserController/getMenuAccess';
 $route['api/user/create_user'] = 'UserController/create_user';
 $route['api/user/update_user/(:num)'] = 'UserController/update_user/$1';
 $route['api/user/delete/(:num)'] = 'UserController/delete/$1';
-$route['api/user/active/(:num)'] = 'UserController/active/$1';
+$route['api/user/activate/(:num)'] = 'UserController/activate/$1';
 $route['api/user/getAllUsers'] = 'UserController/getAllUsers';
 $route['api/user/setStateUser/(:num)'] = 'UserController/setStateUser/$1';
 $route['api/user/getButtonsAccesUser/(:num)'] = 'UserController/getButtonsAccesUser/$1';
@@ -68,6 +68,7 @@ $route['api/perfil/findAllPerfil'] = 'PerfilController/findAllPerfil';
 $route['api/perfil/create'] = 'PerfilController/create';
 $route['api/perfil/update/(:any)'] = 'PerfilController/update/$1';
 $route['api/perfil/delete/(:any)'] = 'PerfilController/delete/$1';
+$route['api/perfil/activate/(:any)'] = 'PerfilController/activate/$1';
 
 //client
 $route['api/client/getPerfil'] = 'ClientController/getClient';
@@ -75,6 +76,7 @@ $route['api/client/findAll'] = 'ClientController/findAll';
 $route['api/client/create'] = 'ClientController/create';
 $route['api/client/update/(:any)'] = 'ClientController/update/$1';
 $route['api/client/delete/(:any)'] = 'ClientController/delete/$1';
+$route['api/client/activate/(:any)'] = 'ClientController/activate/$1';
 
 //access
 $route['api/config/access/getPerfil'] = 'configurations/MenuAccessController/getClient';

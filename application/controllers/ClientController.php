@@ -57,6 +57,22 @@ class ClientController extends CI_Controller {
         return _send_json_response($this, 400, $response);
       }
     }
+    public function activate($id) {
+      if (!validate_http_method($this, ['PUT'])) {
+        return; 
+      }
+      $res = verifyTokenAccess();
+      if(!$res){
+        return;
+      } 
+      if ($this->Client_model->activate($id)) {
+          $response = ['status' => 'success','message'=>'Cliente Habilitado con éxito.'];
+          return _send_json_response($this, 200, $response);
+      } else {
+        $response = ['status' => 'error', 'message' => 'Ocurrio un eror al internatr Habilitar al Cliente.'];
+        return _send_json_response($this, 400, $response);
+      }
+    }
     /*
     public function getPerfil() {
       if (!validate_http_method($this, ['GET'])) return; 

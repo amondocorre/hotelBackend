@@ -102,8 +102,8 @@ class UserController extends CI_Controller {
         return _send_json_response($this, 400, $response);
       }
     }
-    public function active($id) {
-      if (!validate_http_method($this, ['POST'])) {
+    public function activate($id) {
+      if (!validate_http_method($this, ['PUT'])) {
         return; 
       }
       $res = verifyTokenAccess();

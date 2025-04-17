@@ -46,6 +46,10 @@ class Client_model extends CI_Model {
     $this->db->where('id_cliente', $id);
     return $this->db->update($this->table, ['activo'=>'0']);
   }
+  public function activate($id) {
+    $this->db->where('id_cliente', $id);
+    return $this->db->update($this->table, ['activo'=>'1']);
+  }
   private function validate_pefil_data($data, $id_client = 0) {
     $this->form_validation->set_data($data);
     $this->form_validation->set_rules('nombres', 'Nombre', 'required|max_length[100]');

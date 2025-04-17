@@ -41,6 +41,38 @@ class PerfilController extends CI_Controller {
           return _send_json_response($this, 400, $response);
         }
     }
+    public function delete($id) {
+      if (!validate_http_method($this, ['DELETE'])) {
+        return; 
+      }
+      $res = verifyTokenAccess();
+      if(!$res){
+        return;
+      } 
+      if ($this->Perfil_model->delete($id)) {
+          $response = ['status' => 'success','message'=>'Perfil eliminado con éxito.'];
+          return _send_json_response($this, 200, $response);
+      } else {
+        $response = ['status' => 'error', 'message' =>  'Ocurrio un eror al internatr eliminar el Perfil.'];
+        return _send_json_response($this, 400, $response);
+      }
+    }
+    public function activate($id) {
+      if (!validate_http_method($this, ['PUT'])) {
+        return; 
+      }
+      $res = verifyTokenAccess();
+      if(!$res){
+        return;
+      } 
+      if ($this->Perfil_model->activate($id)) {
+          $response = ['status' => 'success','message'=>'Perfil Habilitado con éxito.'];
+          return _send_json_response($this, 200, $response);
+      } else {
+        $response = ['status' => 'error', 'message' => 'Ocurrio un eror al internatr Habilitar al Perfil.'];
+        return _send_json_response($this, 400, $response);
+      }
+    }
     public function getPerfil() {
       if (!validate_http_method($this, ['GET'])) return; 
       $res = verifyTokenAccess();
