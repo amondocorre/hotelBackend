@@ -69,9 +69,24 @@ $route['api/perfil/create'] = 'PerfilController/create';
 $route['api/perfil/update/(:any)'] = 'PerfilController/update/$1';
 $route['api/perfil/delete/(:any)'] = 'PerfilController/delete/$1';
 
-//perfiles
+//client
 $route['api/client/getPerfil'] = 'ClientController/getClient';
 $route['api/client/findAll'] = 'ClientController/findAll';
 $route['api/client/create'] = 'ClientController/create';
 $route['api/client/update/(:any)'] = 'ClientController/update/$1';
 $route['api/client/delete/(:any)'] = 'ClientController/delete/$1';
+
+//access
+$route['api/config/access/getPerfil'] = 'configurations/MenuAccessController/getClient';
+$route['api/config/access/findAll'] = 'configurations/MenuAccessController/findAll';
+$route['api/config/access/create'] = 'configurations/MenuAccessController/create';
+$route['api/config/access/update/(:any)'] = 'configurations/MenuAccessController/update/$1';
+$route['api/config/access/delete/(:any)'] = 'configurations/MenuAccessController/delete/$1';
+$route['api/config/access/activate/(:any)'] = 'configurations/MenuAccessController/activate/$1';
+
+//Button
+$route['api/config/button/findActive'] = 'configurations/ButtonController/findActive';
+$route['api/config/button/findAll'] = 'configurations/ButtonController/findAll';
+$route['api/config/button/create'] = 'configurations/ButtonController/create';
+$route['api/config/button/update/(:any)'] = 'configurations/ButtonController/update/$1';
+$route['api/config/button/delete/(:any)'] = 'configurations/ButtonController/delete/$1';

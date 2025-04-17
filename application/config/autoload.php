@@ -58,7 +58,7 @@ $autoload['packages'] = array();
 |
 |	$autoload['libraries'] = array('user_agent' => 'ua');
 */
-$autoload['libraries'] = array('JWTHandler','database');
+$autoload['libraries'] = array('JWTHandler','database','form_validation');
 
 /*
 | -------------------------------------------------------------------

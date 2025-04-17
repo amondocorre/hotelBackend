@@ -5,7 +5,7 @@ class UserController extends CI_Controller {
         parent::__construct();
         $this->load->model('auth/User_model');
         $this->load->model('auth/Usuario_model');
-        $this->load->model('auth/AccessMenu_model');
+        $this->load->model('configurations/AccessMenuModel');
     }
     public function index() {
       echo 'Hello from UserController!';
@@ -156,7 +156,7 @@ class UserController extends CI_Controller {
         return;
       }
       
-      $access = $this->AccessMenu_model->findAllIdUser(0);
+      $access = $this->AccessMenuModel->findAllIdUser(0);
       $response = ['message' => 'success','menu'=>$access];
       return _send_json_response($this, 200, $response);
     }
