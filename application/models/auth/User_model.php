@@ -57,6 +57,19 @@ class User_model extends CI_Model {
           return array(); 
       }
     }
+    public function findActive() {
+      $url = getHttpHost();
+      $campos = "id_usuario,usuarios.id_perfil,perfiles.nombre as perfil,usuarios.nombre,email,telefono,celular,usuarios.estado,ci,sexo";
+      $this->db->select($campos);
+      $this->db->join('perfiles', 'usuarios.id_perfil = perfiles.id', 'left'); 
+      $this->db->where('usuarios.estado', 'Activo');
+      $query = $this->db->get($this->table);
+      if ($query->num_rows() > 0) {
+          return $query->result(); 
+      } else {
+          return array(); 
+      }
+    }
     public function create($data) {
         $data['password_hash'] = 'admin';
         if (!$this->validate_user_data($data)) {

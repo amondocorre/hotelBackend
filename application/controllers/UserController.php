@@ -169,6 +169,15 @@ class UserController extends CI_Controller {
       $response = ['status' => 'success','users'=>$usuarios];
       return _send_json_response($this, 200, $response);
     }
+    public function findActive() {
+      if (!validate_http_method($this, ['GET'])) return; 
+      $res = verifyTokenAccess();
+      if(!$res) return; 
+      $usuarios = $this->User_model->findActive();
+      $data['usuarios'] = $usuarios;
+      $response = ['status' => 'success','users'=>$usuarios];
+      return _send_json_response($this, 200, $response);
+    }
     public function setStateUser($id) {
       if (!validate_http_method($this, ['POST'])) return; 
       $res = verifyTokenAccess();

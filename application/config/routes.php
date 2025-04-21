@@ -60,6 +60,7 @@ $route['api/user/update_user/(:num)'] = 'UserController/update_user/$1';
 $route['api/user/delete/(:num)'] = 'UserController/delete/$1';
 $route['api/user/activate/(:num)'] = 'UserController/activate/$1';
 $route['api/user/getAllUsers'] = 'UserController/getAllUsers';
+$route['api/user/findActive'] = 'UserController/findActive';
 $route['api/user/setStateUser/(:num)'] = 'UserController/setStateUser/$1';
 $route['api/user/getButtonsAccesUser/(:num)'] = 'UserController/getButtonsAccesUser/$1';
 //perfiles
