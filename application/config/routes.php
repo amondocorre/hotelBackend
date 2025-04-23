@@ -93,3 +93,7 @@ $route['api/config/button/findAll'] = 'configurations/ButtonController/findAll';
 $route['api/config/button/create'] = 'configurations/ButtonController/create';
 $route['api/config/button/update/(:any)'] = 'configurations/ButtonController/update/$1';
 $route['api/config/button/delete/(:any)'] = 'configurations/ButtonController/delete/$1';
+
+// Security
+$route['api/security/acces/findByUser/(:any)'] = 'security/AccesUserController/findByUser/$1';
+$route['api/security/acces/update/(:any)/(:any)'] = 'security/AccesUserController/update/$1/$2';
