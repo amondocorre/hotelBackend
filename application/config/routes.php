@@ -97,3 +97,6 @@ $route['api/config/button/delete/(:any)'] = 'configurations/ButtonController/del
 // Security
 $route['api/security/acces/findByUser/(:any)'] = 'security/AccesUserController/findByUser/$1';
 $route['api/security/acces/update/(:any)/(:any)'] = 'security/AccesUserController/update/$1/$2';
+
+$route['api/security/acces-perfil/findByPerfil/(:any)'] = 'security/AccesPerfilController/findByPerfil/$1';
+$route['api/security/acces-perfil/update/(:any)/(:any)'] = 'security/AccesPerfilController/update/$1/$2';

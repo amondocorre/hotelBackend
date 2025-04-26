@@ -1,26 +1,26 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class AccesUser extends CI_Model {
-  protected $table = 'acceso_usuario'; 
+class AccesPerfil extends CI_Model {
+  protected $table = 'acceso_perfil'; 
   public function __construct() {
       parent::__construct();
   }
   public function findIdentity($id) {
-      return $this->db->get_where($this->table, ['id_acceso_usuario' => $id])->row();
+      return $this->db->get_where($this->table, ['id_acceso_perfil' => $id])->row();
   }
-  public function getId($acces_user) {
-      return $user->id_acceso_usuario ?? null;
+  public function getId($accesPerfil) {
+      return $user->id_acceso_perfil ?? null;
   }
-  public function findByUser($idUser) {
-    $campos = 'ma.id_menu_acceso, ma.nombre, ma.nivel_superior, ma.icono, ma.tipo,coalesce(au.estado,0)as acceso,
+  public function findByPerfil($idPerfil) {
+    $campos = 'ma.id_menu_acceso, ma.nombre, ma.nivel_superior, ma.icono, ma.tipo,coalesce(ap.estado,0)as acceso,
     (SELECT CONCAT("[", GROUP_CONCAT(\'"\', ab.id_boton, \'"\'), "]") FROM acceso_boton ab WHERE ab.id_acceso = ma.id_menu_acceso AND ab.estado = 1) AS id_botones,
-    (SELECT CONCAT("[", GROUP_CONCAT(\'"\', abu.id_boton, \'"\'), "]") FROM acceso_boton_usuario abu WHERE abu.id_acceso = ma.id_menu_acceso AND abu.estado = 1 AND abu.id_usuario = '.$this->db->escape($idUser).') AS botones';
+    (SELECT CONCAT("[", GROUP_CONCAT(\'"\', abp.id_boton, \'"\'), "]") FROM acceso_boton_perfil abp WHERE abp.id_acceso = ma.id_menu_acceso AND abp.estado = 1 AND abp.id_perfil = '.$this->db->escape($idPerfil).') AS botones';
     
     $this->db->select($campos); 
     $this->db->from('menu_acceso as ma' );
     $this->db->where('ma.estado','1');
-    $this->db->join($this->table . ' as au', 'ma.id_menu_acceso = au.id_acceso AND au.id_usuario = '.$this->db->escape($idUser), 'left');
+    $this->db->join($this->table . ' as ap', 'ma.id_menu_acceso = ap.id_acceso AND ap.id_perfil = '.$this->db->escape($idPerfil), 'left');
     $access = $this->db->get()->result();
     $resAccess =  $this->getSubMenu($access,'0',0);
       return $resAccess;
