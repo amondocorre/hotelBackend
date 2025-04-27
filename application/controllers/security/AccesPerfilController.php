@@ -35,24 +35,16 @@ class AccesPerfilController extends CI_Controller {
         $data = json_decode(file_get_contents('php://input'), true);
         $buttons = $data['buttons']??[];
         $estado = $data['estado']??0;
-        if(!$this->AccesUser->update($idAcces,$idUser,$estado)) {
+        if(!$this->AccesPerfil->update($idAcces,$idUser,$estado)) {
             $response = ['status' => 'error', 'message' =>  'Ucurrio un error inesperado.'];
           return _send_json_response($this, 400, $response);
-        } elseif($this->AccesUser->addButtonsAccesUser($idAcces,$idUser,$buttons)) {
+        } elseif($this->AccesPerfil->addButtonsAccesPerfil($idAcces,$idUser,$buttons)) {
             $response = ['status' => 'success','message'=>'Permisos actualizado con éxito.'];
             return _send_json_response($this, 200, $response);
         }else{
           $response = ['status' => 'error', 'message' =>  'Ucurrio un error inesperado.'];
           return _send_json_response($this, 400, $response);
         }
-    }
-    public function findActive() {
-      if (!validate_http_method($this, ['GET'])) return; 
-      $res = verifyTokenAccess();
-      if(!$res) return; 
-      $perfiles = $this->ButtonModel->findActive();
-      $response = ['status' => 'success','buttons'=>$perfiles];
-      return _send_json_response($this, 200, $response);
     }
     public function findByPerfil($idPefil) {
       if (!validate_http_method($this, ['GET'])) return; 
