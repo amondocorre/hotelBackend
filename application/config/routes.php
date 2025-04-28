@@ -100,3 +100,19 @@ $route['api/security/acces/update/(:any)/(:any)'] = 'security/AccesUserControlle
 
 $route['api/security/acces-perfil/findByPerfil/(:any)'] = 'security/AccesPerfilController/findByPerfil/$1';
 $route['api/security/acces-perfil/update/(:any)/(:any)'] = 'security/AccesPerfilController/update/$1/$2';
+
+// Mascotas
+$route['api/config/pet/findActive'] = 'configurations/PetController/findActive';
+$route['api/config/pet/findAll'] = 'configurations/PetController/findAll';
+$route['api/config/pet/create'] = 'configurations/PetController/create';
+$route['api/config/pet/update/(:any)'] = 'configurations/PetController/update/$1';
+$route['api/config/pet/delete/(:any)'] = 'configurations/PetController/delete/$1';
+$route['api/config/pet/activate/(:any)'] = 'configurations/PetController/activate/$1';
+
+//razas
+$route['api/config/breed/findActive'] = 'configurations/BreedController/findActive';
+$route['api/config/breed/findAll'] = 'configurations/BreedController/findAll';
+$route['api/config/breed/create'] = 'configurations/BreedController/create';
+$route['api/config/breed/update/(:any)'] = 'configurations/BreedController/update/$1';
+$route['api/config/breed/delete/(:any)'] = 'configurations/BreedController/delete/$1';
+$route['api/config/breed/activate/(:any)'] = 'configurations/BreedController/activate/$1';
