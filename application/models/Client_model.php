@@ -16,8 +16,8 @@ class Client_model extends CI_Model {
     public function findAll() {
       return $this->db->get($this->table)->result();
   }
-    public function getCliente(){
-      $this->db->select('*'); 
+    public function findActive(){
+      $this->db->select("*,CONCAT(nombres, ' ', ap_paterno, ' ', ap_materno) AS nombre_completo"); 
       $this->db->from($this->table); 
       $this->db->where('activo', 1); 
       $query = $this->db->get();

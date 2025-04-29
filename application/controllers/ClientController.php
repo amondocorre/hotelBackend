@@ -73,15 +73,14 @@ class ClientController extends CI_Controller {
         return _send_json_response($this, 400, $response);
       }
     }
-    /*
-    public function getPerfil() {
+    public function findActive() {
       if (!validate_http_method($this, ['GET'])) return; 
       $res = verifyTokenAccess();
       if(!$res) return; 
-      $perfiles = $this->Perfil_model->getPerfil();
+      $perfiles = $this->Client_model->findActive();
       $response = ['status' => 'success','data'=>$perfiles];
       return _send_json_response($this, 200, $response);
-    }*/
+    }
     public function findAll() {
       if (!validate_http_method($this, ['GET'])) return; 
       $res = verifyTokenAccess();

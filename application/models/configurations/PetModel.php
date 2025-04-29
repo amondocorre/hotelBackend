@@ -56,17 +56,17 @@ class PetModel extends CI_Model {
     if (!$this->validate_pet_data($data, $id)) {
         return FALSE;
     }
-    $this->db->where('id', $id);
+    $this->db->where('id_mascota', $id);
     return $this->db->update($this->table, $data);
   }
   private function validate_pet_data($data, $id_mascota = 0) {
     $this->form_validation->set_data($data);
     $this->form_validation->set_rules('nombre', 'Nombre', 'required|max_length[100]');
     //$this->form_validation->set_rules('id', 'id', 'max_length[15] |is_unique[mascotaes.id]');
-      $this->form_validation->set_rules('sexo', 'Estado', 'in_list[Macho,Hembra,Otro]');
-      $this->form_validation->set_rules('color', 'Color', 'required|max_length[50]');
-      $this->form_validation->set_rules('pelo', 'Pelo', 'required|max_length[50]');
-      $this->form_validation->set_rules('talla', 'Talla', 'required|max_length[50]');
+    $this->form_validation->set_rules('sexo', 'Sexo', 'in_list[Macho,Hembra,Otro]');
+    $this->form_validation->set_rules('color', 'Color', 'required|max_length[50]');
+    $this->form_validation->set_rules('pelo', 'Pelo', 'required|max_length[50]');
+    //$this->form_validation->set_rules('talla', 'Talla', 'required|max_length[50]');
     return $this->form_validation->run();
   }
 }

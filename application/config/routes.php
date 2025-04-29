@@ -72,7 +72,7 @@ $route['api/perfil/delete/(:any)'] = 'PerfilController/delete/$1';
 $route['api/perfil/activate/(:any)'] = 'PerfilController/activate/$1';
 
 //client
-$route['api/client/getPerfil'] = 'ClientController/getClient';
+$route['api/client/findActive'] = 'ClientController/findActive';
 $route['api/client/findAll'] = 'ClientController/findAll';
 $route['api/client/create'] = 'ClientController/create';
 $route['api/client/update/(:any)'] = 'ClientController/update/$1';

@@ -16,7 +16,7 @@ class BreedModel extends CI_Model {
     return $this->db->get($this->table)->result();
   }
   public function findActive(){
-    $this->db->select("t.*");
+    $this->db->select("t.*,concat(especie,' > ',raza) as especie_raza");
     $this->db->from($this->table . ' AS t'); 
     $this->db->where('t.estado', 1);
     $query = $this->db->get();
