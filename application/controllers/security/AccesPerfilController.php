@@ -24,7 +24,7 @@ class AccesPerfilController extends CI_Controller {
         return _send_json_response($this, 400, $response);
       }
     }
-    public function update($idAcces,$idUser) {
+    public function update($idAcces,$idPefil) {
         if (!validate_http_method($this, ['POST'])) {
           return; 
         }
@@ -35,10 +35,11 @@ class AccesPerfilController extends CI_Controller {
         $data = json_decode(file_get_contents('php://input'), true);
         $buttons = $data['buttons']??[];
         $estado = $data['estado']??0;
-        if(!$this->AccesPerfil->update($idAcces,$idUser,$estado)) {
+        $usuarios = $this->AccesPerfil->findUsuariosByPefil($idPefil);
+        if(!$this->AccesPerfil->update($idAcces,$idPefil,$estado,$usuarios)) {
             $response = ['status' => 'error', 'message' =>  'Ucurrio un error inesperado.'];
           return _send_json_response($this, 400, $response);
-        } elseif($this->AccesPerfil->addButtonsAccesPerfil($idAcces,$idUser,$buttons)) {
+        } elseif($this->AccesPerfil->addButtonsAccesPerfil($idAcces,$idPefil,$buttons,$usuarios)) {
             $response = ['status' => 'success','message'=>'Permisos actualizado con éxito.'];
             return _send_json_response($this, 200, $response);
         }else{
