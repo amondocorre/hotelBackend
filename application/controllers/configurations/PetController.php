@@ -53,7 +53,7 @@ class PetController extends CI_Controller {
           $response = ['status' => 'success','message'=>'Mascota eliminado con éxito.'];
           return _send_json_response($this, 200, $response);
       } else {
-        $response = ['status' => 'error', 'message' =>  'Ocurrio un eror al internatr eliminar el Mascota.'];
+        $response = ['status' => 'error', 'message' =>  'Ocurrio un eror al internatar eliminar el Mascota.'];
         return _send_json_response($this, 400, $response);
       }
     }
@@ -69,7 +69,7 @@ class PetController extends CI_Controller {
           $response = ['status' => 'success','message'=>'Mascota Habilitado con éxito.'];
           return _send_json_response($this, 200, $response);
       } else {
-        $response = ['status' => 'error', 'message' => 'Ocurrio un eror al internatr Habilitar al Mascota.'];
+        $response = ['status' => 'error', 'message' => 'Ocurrio un eror al internatar Habilitar al Mascota.'];
         return _send_json_response($this, 400, $response);
       }
     }

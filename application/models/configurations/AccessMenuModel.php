@@ -16,13 +16,16 @@ class AccessMenuModel extends CI_Model {
     $this->db->select('ma.*, (SELECT CONCAT("[", GROUP_CONCAT(\'"\', ab.id_boton, \'"\'), "]") FROM acceso_boton ab WHERE ab.id_acceso = ma.id_menu_acceso AND ab.estado = 1) AS id_botones');
     $this->db->from('menu_acceso ma');
     //$this->db->where('ma.estado', 1);
+    $this->db->order_by('numero_orden', 'ASC');
     $query = $this->db->get();
     $access = $query->result();
       $resAccess =  $this->getSubMenu($access,'0',0);
       return $resAccess;
   }
   public function findAllIdUser($idUser) {
-    $access = $this->db->get_where($this->table, ['estado' => 1])->result();
+    $this->db->where(['estado' => 1])->order_by('numero_orden', 'ASC');
+    $access = $this->db->get($this->table)->result();
+    
     $resAccess =  $this->getSubMenu($access,'0',0);
     return $resAccess;
   }

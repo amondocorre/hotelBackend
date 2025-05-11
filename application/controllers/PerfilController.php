@@ -53,7 +53,7 @@ class PerfilController extends CI_Controller {
           $response = ['status' => 'success','message'=>'Perfil eliminado con éxito.'];
           return _send_json_response($this, 200, $response);
       } else {
-        $response = ['status' => 'error', 'message' =>  'Ocurrio un eror al internatr eliminar el Perfil.'];
+        $response = ['status' => 'error', 'message' =>  'Ocurrio un eror al internatar eliminar el Perfil.'];
         return _send_json_response($this, 400, $response);
       }
     }
@@ -69,7 +69,7 @@ class PerfilController extends CI_Controller {
           $response = ['status' => 'success','message'=>'Perfil Habilitado con éxito.'];
           return _send_json_response($this, 200, $response);
       } else {
-        $response = ['status' => 'error', 'message' => 'Ocurrio un eror al internatr Habilitar al Perfil.'];
+        $response = ['status' => 'error', 'message' => 'Ocurrio un eror al internatar Habilitar al Perfil.'];
         return _send_json_response($this, 400, $response);
       }
     }

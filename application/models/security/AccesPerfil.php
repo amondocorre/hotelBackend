@@ -21,6 +21,7 @@ class AccesPerfil extends CI_Model {
     $this->db->from('menu_acceso as ma' );
     $this->db->where('ma.estado','1');
     $this->db->join($this->table . ' as ap', 'ma.id_menu_acceso = ap.id_acceso AND ap.id_perfil = '.$this->db->escape($idPerfil), 'left');
+    $this->db->order_by('numero_orden', 'ASC');
     $access = $this->db->get()->result();
     $resAccess =  $this->getSubMenu($access,'0',0);
       return $resAccess;

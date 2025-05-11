@@ -116,3 +116,24 @@ $route['api/config/breed/create'] = 'configurations/BreedController/create';
 $route['api/config/breed/update/(:any)'] = 'configurations/BreedController/update/$1';
 $route['api/config/breed/delete/(:any)'] = 'configurations/BreedController/delete/$1';
 $route['api/config/breed/activate/(:any)'] = 'configurations/BreedController/activate/$1';
+// metodo pago
+$route['api/config/payment-method/findActive'] = 'configurations/PaymentMethodController/findActive';
+$route['api/config/payment-method/findAll'] = 'configurations/PaymentMethodController/findAll';
+$route['api/config/payment-method/create'] = 'configurations/PaymentMethodController/create';
+$route['api/config/payment-method/update/(:any)'] = 'configurations/PaymentMethodController/update/$1';
+$route['api/config/payment-method/delete/(:any)'] = 'configurations/PaymentMethodController/delete/$1';
+$route['api/config/payment-method/activate/(:any)'] = 'configurations/PaymentMethodController/activate/$1';
+// caja
+$route['api/caja/findActive'] = 'caja/CajaController/findActive';
+$route['api/caja/findAll'] = 'caja/CajaController/findAll';
+$route['api/caja/create'] = 'caja/CajaController/create';
+$route['api/caja/update/(:any)'] = 'caja/CajaController/update/$1';
+$route['api/caja/delete/(:any)'] = 'caja/CajaController/delete/$1';
+$route['api/caja/activate/(:any)'] = 'caja/CajaController/activate/$1';
+// caja
+$route['api/caja-movi/findActive'] = 'caja/BoxMovementController/findActive';
+$route['api/caja-movi/findAll'] = 'caja/BoxMovementController/findAll';
+$route['api/caja-movi/create'] = 'caja/BoxMovementController/create';
+$route['api/caja-movi/update/(:any)'] = 'caja/BoxMovementController/update/$1';
+$route['api/caja-movi/delete/(:any)'] = 'caja/BoxMovementController/delete/$1';
+$route['api/caja-movi/activate/(:any)'] = 'caja/BoxMovementController/activate/$1';

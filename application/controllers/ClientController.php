@@ -69,7 +69,7 @@ class ClientController extends CI_Controller {
           $response = ['status' => 'success','message'=>'Cliente Habilitado con éxito.'];
           return _send_json_response($this, 200, $response);
       } else {
-        $response = ['status' => 'error', 'message' => 'Ocurrio un eror al internatr Habilitar al Cliente.'];
+        $response = ['status' => 'error', 'message' => 'Ocurrio un eror al internatar Habilitar al Cliente.'];
         return _send_json_response($this, 400, $response);
       }
     }

@@ -155,8 +155,9 @@ class UserController extends CI_Controller {
       if(!$res){
         return;
       }
-      
-      $access = $this->AccessMenuModel->findAllIdUser(0);
+      $user = $res->user;
+      $idUser = $user->id_usuario;
+      $access = $this->AccessMenuModel->findAllIdUser($idUser);
       $response = ['message' => 'success','menu'=>$access];
       return _send_json_response($this, 200, $response);
     }
