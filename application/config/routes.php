@@ -123,6 +123,20 @@ $route['api/config/payment-method/create'] = 'configurations/PaymentMethodContro
 $route['api/config/payment-method/update/(:any)'] = 'configurations/PaymentMethodController/update/$1';
 $route['api/config/payment-method/delete/(:any)'] = 'configurations/PaymentMethodController/delete/$1';
 $route['api/config/payment-method/activate/(:any)'] = 'configurations/PaymentMethodController/activate/$1';
+// Servicio
+$route['api/config/service/findActive'] = 'configurations/ServiceController/findActive';
+$route['api/config/service/findAll'] = 'configurations/ServiceController/findAll';
+$route['api/config/service/create'] = 'configurations/ServiceController/create';
+$route['api/config/service/update/(:any)'] = 'configurations/ServiceController/update/$1';
+$route['api/config/service/delete/(:any)'] = 'configurations/ServiceController/delete/$1';
+$route['api/config/service/activate/(:any)'] = 'configurations/ServiceController/activate/$1';
+// Servicio
+$route['api/config/service-type/findActive'] = 'configurations/ServiceTypeController/findActive';
+$route['api/config/service-type/findAll'] = 'configurations/ServiceTypeController/findAll';
+$route['api/config/service-type/create'] = 'configurations/ServiceTypeController/create';
+$route['api/config/service-type/update/(:any)'] = 'configurations/ServiceTypeController/update/$1';
+$route['api/config/service-type/delete/(:any)'] = 'configurations/ServiceTypeController/delete/$1';
+$route['api/config/service-type/activate/(:any)'] = 'configurations/ServiceTypeController/activate/$1';
 // caja
 $route['api/caja/findActive'] = 'caja/CajaController/findActive';
 $route['api/caja/findAll'] = 'caja/CajaController/findAll';
@@ -137,3 +151,5 @@ $route['api/caja-movi/create'] = 'caja/BoxMovementController/create';
 $route['api/caja-movi/update/(:any)'] = 'caja/BoxMovementController/update/$1';
 $route['api/caja-movi/delete/(:any)'] = 'caja/BoxMovementController/delete/$1';
 $route['api/caja-movi/activate/(:any)'] = 'caja/BoxMovementController/activate/$1';
+// 
+$route['api/daycare/findPetByClient/(:any)'] = 'DaycareController/findPetByClient/$1';
