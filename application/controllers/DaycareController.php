@@ -5,34 +5,13 @@ class DaycareController extends CI_Controller {
         parent::__construct();
         $this->load->database(); 
         $this->load->model('DaycareModel');
+        $this->load->model('configurations/PaymentMethod');
+        $this->load->model('configurations/ServiceModel');
+        $this->load->model('configurations/ServiceTypeModel');
+        $this->load->model('caja/CajaModel');
     } 
-    public function create() {
-      if (!validate_http_method($this, ['POST'])) {
-        return;
-      }
-      $res = verifyTokenAccess();
-      if(!$res){
-        return;
-      }
-      $user = $res->user;
-      $idUser = $user->id_usuario;
-      $turno = $this->DaycareModel->findActive($idUser);
-      if ($turno) {
-        $response = ['status' => 'error','message'=>'Existe un turno abierto.'];
-        return _send_json_response($this, 400, $response);
-      }
-      $data = json_decode(file_get_contents('php://input'), true);
-      $data['id_usuario'] = $idUser;
-      $id = $this->DaycareModel->create($data);
-      if ($id) {
-          $response = ['status' => 'success','message'=>'Se aperturo con éxito el Turno.'];
-          return _send_json_response($this, 200, $response);
-      } else {
-        $response = ['status' => 'error', 'message' =>  array_values($this->form_validation->error_array())];
-        return _send_json_response($this, 400, $response);
-      }
-    }
-    public function update($id) {
+    
+    public function registerIngreso() {
       if (!validate_http_method($this, ['POST'])) {
         return; 
       }
@@ -42,21 +21,49 @@ class DaycareController extends CI_Controller {
       } 
       $user = $res->user;
       $idUser = $user->id_usuario;
-      $turno = $this->DaycareModel->findActive($idUser);
+      $turno = $this->CajaModel->findActive($idUser);
       if (!$turno) {
         $response = ['status' => 'error','message'=>'No se encontro ningun turno abierto.'];
         return _send_json_response($this, 400, $response);
       }
       if (!$turno->myTurno) {
-        $response = ['status' => 'error','message'=>'El turno solo puede cerrar el usuario que aperturo el turno.'];
+        $response = ['status' => 'error','message'=>'Solo el usuario que aperturo puede realizar el ingreso.'];
         return _send_json_response($this, 400, $response);
       }
-      $data = json_decode(file_get_contents('php://input'), true);
-      if ($this->DaycareModel->update($id, $data)) {
-          $response = ['status' => 'success','message'=>'Se cerro el turno con éxito.'];
+      $data = json_decode(file_get_contents('php://input'), false);
+      if ($this->DaycareModel->registerIngreso($data,$turno,$idUser)) {
+          $response = ['status' => 'success','message'=>'Se registro con éxito el ingreso.'];
           return _send_json_response($this, 200, $response);
       } else {
-        $response = ['status' => 'error', 'message' =>  array_values($this->form_validation->error_array())];
+        $response = ['status' => 'error', 'message' =>  'Ocurrio un error al intentar registrar el ingreso.'];
+        return _send_json_response($this, 400, $response);
+      }
+    }
+    public function registerSalida() {
+      if (!validate_http_method($this, ['POST'])) {
+        return; 
+      }
+      $res = verifyTokenAccess();
+      if(!$res){
+        return;
+      } 
+      $user = $res->user;
+      $idUser = $user->id_usuario;
+      $turno = $this->CajaModel->findActive($idUser);
+      if (!$turno) {
+        $response = ['status' => 'error','message'=>'No se encontro ningun turno abierto.'];
+        return _send_json_response($this, 400, $response);
+      }
+      if (!$turno->myTurno) {
+        $response = ['status' => 'error','message'=>'Solo el usuario que aperturo puede registrar la salida.'];
+        return _send_json_response($this, 400, $response);
+      }
+      $data = json_decode(file_get_contents('php://input'), false);
+      if ($this->DaycareModel->registerSalida($data,$turno,$idUser)) {
+          $response = ['status' => 'success','message'=>'Se registro con éxito la salida.'];
+          return _send_json_response($this, 200, $response);
+      } else {
+        $response = ['status' => 'error', 'message' =>  'Ocurrio un error al intentar registrar la salida.'];
         return _send_json_response($this, 400, $response);
       }
     }
@@ -102,12 +109,26 @@ class DaycareController extends CI_Controller {
       $response = ['status' => 'success','data'=>$Mascotaes];
       return _send_json_response($this, 200, $response);
     }
-    public function findAll() {
-      if (!validate_http_method($this, ['GET'])) return; 
+    public function getDaycare() {
+      if (!validate_http_method($this, ['POST'])) return; 
       $res = verifyTokenAccess();
       if(!$res) return; 
-      $Mascotaes = $this->DaycareModel->findAll();
-      $response = ['status' => 'success','data'=>$Mascotaes];
+      $data = json_decode(file_get_contents('php://input'), true);
+      $estado = $data['estado']??'All';
+      $i_fecha = $data['i_fecha']??'';
+      $f_fecha = $data['f_fecha']??'';
+      $data = $this->DaycareModel->getDaycare($estado,$i_fecha,$f_fecha);
+      $response = ['status' => 'success','data'=>$data];
+      return _send_json_response($this, 200, $response);
+    }
+    public function getDaycareById($idClient) {
+      if (!validate_http_method($this, ['POST'])) return; 
+      $res = verifyTokenAccess();
+      if(!$res) return; 
+      $data = json_decode(file_get_contents('php://input'), true);
+      $idsIngreso = $data['idsIngreso']??[];
+      $data = $this->DaycareModel->getDaycareById($idsIngreso,$idClient);
+      $response = ['status' => 'success','data'=>$data];
       return _send_json_response($this, 200, $response);
     }
     public function findPetByClient($idClient) {
@@ -116,6 +137,17 @@ class DaycareController extends CI_Controller {
       if(!$res) return; 
       $Mascotas = $this->DaycareModel->findPetByClient($idClient);
       $response = ['status' => 'success','data'=>$Mascotas];
+      return _send_json_response($this, 200, $response);
+    }
+    public function getDataRequerid() {
+      if (!validate_http_method($this, ['GET'])) return; 
+      $res = verifyTokenAccess();
+      if(!$res) return; 
+      $response = new stdClass();
+      $response->status = 'success';
+      $response->services = $this->ServiceModel->findActive();
+      $response->servicesType = $this->ServiceTypeModel->findActive();
+      $response->paymentMethods = $this->PaymentMethod->findActive();
       return _send_json_response($this, 200, $response);
     }
 }

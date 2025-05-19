@@ -153,3 +153,8 @@ $route['api/caja-movi/delete/(:any)'] = 'caja/BoxMovementController/delete/$1';
 $route['api/caja-movi/activate/(:any)'] = 'caja/BoxMovementController/activate/$1';
 // 
 $route['api/daycare/findPetByClient/(:any)'] = 'DaycareController/findPetByClient/$1';
+$route['api/daycare/getDaycare'] = 'DaycareController/getDaycare';
+$route['api/daycare/getDataRequerid'] = 'DaycareController/getDataRequerid';
+$route['api/daycare/registerIngreso'] = 'DaycareController/registerIngreso';
+$route['api/daycare/getDaycareById/(:any)'] = 'DaycareController/getDaycareById/$1';
+$route['api/daycare/registerSalida'] = 'DaycareController/registerSalida';
