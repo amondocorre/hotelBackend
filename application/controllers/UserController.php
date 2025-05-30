@@ -6,6 +6,7 @@ class UserController extends CI_Controller {
         $this->load->model('auth/User_model');
         $this->load->model('auth/Usuario_model');
         $this->load->model('configurations/AccessMenuModel');
+        $this->load->model('configurations/Company');
     }
     public function index() {
       echo 'Hello from UserController!';
@@ -158,7 +159,8 @@ class UserController extends CI_Controller {
       $user = $res->user;
       $idUser = $user->id_usuario;
       $access = $this->AccessMenuModel->findAllIdUser($idUser);
-      $response = ['message' => 'success','menu'=>$access];
+      $company = $this->Company->getDataId(1);
+      $response = ['message' => 'success','menu'=>$access,'dataConpany'=>$company];
       return _send_json_response($this, 200, $response);
     }
     public function getAllUsers() {

@@ -157,4 +157,12 @@ $route['api/daycare/getDaycare'] = 'DaycareController/getDaycare';
 $route['api/daycare/getDataRequerid'] = 'DaycareController/getDataRequerid';
 $route['api/daycare/registerIngreso'] = 'DaycareController/registerIngreso';
 $route['api/daycare/getDaycareById/(:any)'] = 'DaycareController/getDaycareById/$1';
+$route['api/daycare/getDaycareById2/(:any)'] = 'DaycareController/getDaycareById2/$1';
 $route['api/daycare/registerSalida'] = 'DaycareController/registerSalida';
+
+$route['api/config/company/findActive'] = 'configurations/CompanyController/findActive';
+$route['api/config/company/findAll'] = 'configurations/CompanyController/findAll';
+$route['api/config/company/create'] = 'configurations/CompanyController/create';
+$route['api/config/company/update/(:any)'] = 'configurations/CompanyController/update/$1';
+$route['api/config/company/delete/(:any)'] = 'configurations/CompanyController/delete/$1';
+$route['api/config/company/activate/(:any)'] = 'configurations/CompanyController/activate/$1';

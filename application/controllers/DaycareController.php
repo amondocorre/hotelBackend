@@ -9,6 +9,7 @@ class DaycareController extends CI_Controller {
         $this->load->model('configurations/ServiceModel');
         $this->load->model('configurations/ServiceTypeModel');
         $this->load->model('caja/CajaModel');
+        $this->load->library('pdf');
     } 
     
     public function registerIngreso() {
@@ -31,8 +32,10 @@ class DaycareController extends CI_Controller {
         return _send_json_response($this, 400, $response);
       }
       $data = json_decode(file_get_contents('php://input'), false);
-      if ($this->DaycareModel->registerIngreso($data,$turno,$idUser)) {
-          $response = ['status' => 'success','message'=>'Se registro con éxito el ingreso.'];
+      $idIngreso = $this->DaycareModel->registerIngreso($data,$turno,$idUser);
+      if ($idIngreso) {
+          $idIngreso = $idIngreso==true?0:$idIngreso;
+          $response = ['status' => 'success','message'=>'Se registro con éxito el ingreso.','idIngreso'=>$idIngreso];
           return _send_json_response($this, 200, $response);
       } else {
         $response = ['status' => 'error', 'message' =>  'Ocurrio un error al intentar registrar el ingreso.'];
@@ -59,8 +62,10 @@ class DaycareController extends CI_Controller {
         return _send_json_response($this, 400, $response);
       }
       $data = json_decode(file_get_contents('php://input'), false);
-      if ($this->DaycareModel->registerSalida($data,$turno,$idUser)) {
-          $response = ['status' => 'success','message'=>'Se registro con éxito la salida.'];
+      $idIngreso = $this->DaycareModel->registerSalida($data,$turno,$idUser);
+      if ($idIngreso) {
+          $idIngreso = $idIngreso==true?0:$idIngreso;
+          $response = ['status' => 'success','message'=>'Se registro con éxito la salida.','idIngreso'=>$idIngreso];
           return _send_json_response($this, 200, $response);
       } else {
         $response = ['status' => 'error', 'message' =>  'Ocurrio un error al intentar registrar la salida.'];
@@ -150,4 +155,69 @@ class DaycareController extends CI_Controller {
       $response->paymentMethods = $this->PaymentMethod->findActive();
       return _send_json_response($this, 200, $response);
     }
+    public function getDaycareById2($idClient) {
+      if (!validate_http_method($this, ['POST'])) return; 
+      $res = verifyTokenAccess();
+      if(!$res) return; 
+      $data = json_decode(file_get_contents('php://input'), true);
+      $idsIngreso = $data['idsIngreso']??[];
+      $data = $this->DaycareModel->getDaycareById($idsIngreso,$idClient);
+      $response = ['status' => 'success','data'=>$data];
+
+      $pdf = new TCPDF();
+        $pdf->SetTitle('Comprobante de Pago');
+
+        // Agregar una página
+        $pdf->AddPage();
+
+        // Datos del cliente
+        $cliente = [
+            'Nombre' => 'Carlos Gutiérrez López',
+            'CI' => '6543210 CB',
+            'Teléfono' => '70712345',
+            'Email' => 'carlos.gutierrez@gmail.com'
+        ];
+
+        // Datos de las mascotas
+        $mascotas = [
+            [
+                'nombre' => 'Firulais',
+                'servicio' => 'PAQ DIARIO',
+                'precio' => 100.00,
+                'descuento' => 20.00,
+                'total_pagar' => 80.00
+            ],
+            [
+                'nombre' => 'Pelusa',
+                'servicio' => 'PAQ DIARIO',
+                'precio' => 100.00,
+                'descuento' => 10.00,
+                'total_pagar' => 90.00
+            ]
+        ];
+
+        // Crear contenido
+        $html = "<h2>Comprobante de Pago</h2>";
+        $html .= "<strong>Cliente:</strong> {$cliente['Nombre']}<br>";
+        $html .= "<strong>CI:</strong> {$cliente['CI']}<br>";
+        $html .= "<strong>Teléfono:</strong> {$cliente['Teléfono']}<br>";
+        $html .= "<strong>Email:</strong> {$cliente['Email']}<br><br>";
+
+        foreach ($mascotas as $m) {
+            $html .= "<strong>Mascota:</strong> {$m['nombre']}<br>";
+            $html .= "<strong>Servicio:</strong> {$m['servicio']}<br>";
+            $html .= "<strong>Precio:</strong> {$m['precio']} Bs<br>";
+            $html .= "<strong>Descuento:</strong> {$m['descuento']} Bs<br>";
+            $html .= "<strong>Total a Pagar:</strong> {$m['total_pagar']} Bs<br><br>";
+        }
+
+        // Agregar HTML al PDF
+        $pdf->writeHTML($html, true, false, true, false, '');
+
+        // Descargar el archivo PDF
+        $pdf->Output('comprobante_pago.pdf', 'D');
+
+      return _send_json_response($this, 200, $response);
+    }
+
 }

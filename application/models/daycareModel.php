@@ -86,7 +86,7 @@ class daycareModel extends CI_Model {
           $dataServicio = $this->ServiceModel->findIdentity($idServicio);
           $diasIncluidos = (int)$dataServicio->dias_incluidos;
           $diasDisponibles = $diasIncluidos;
-          if(true){
+          if($servicio->editable ==1){
             $idContrato = $this->insertContrado($idTurno,$idCliente,$idMascota,$idServicio,$fechaActual,$diasDisponibles,$precio,$subDescuento,$subTotal,$observacion);
             if($idContrato){
               $this->insertContradoDetalle($idContrato,$idIngreso);
@@ -96,12 +96,15 @@ class daycareModel extends CI_Model {
                 $this->insertPagoDetalle($monto,$idPago,$idContrato,0);
               }
             }
+          }else{
+            $idContrato = $servicio->id_paquete_contratado;
+            $this->insertContradoDetalle($idContrato,$idIngreso);
           }
         }
       }else;
     }
     $this->db->trans_complete();
-    return true;
+    return $idIngreso?$idIngreso:true;;
   }
   public function registerSalida($data,$turno,$idUsuario){
     //$this->db->trans_rollback();
@@ -192,7 +195,7 @@ class daycareModel extends CI_Model {
       }else;
     }
     $this->db->trans_complete();
-    return true;
+    return $idIngreso?$idIngreso:true;
   }
   public function insertIngreso($idCaja,$idMascota,$idCliente,$fechaIngreso,$total) {
     $niewData = new stdClass();
@@ -352,6 +355,20 @@ class daycareModel extends CI_Model {
     } else {
         return array();
     }
+  } 
+  public function getPagos($idsIngreso) {
+    $this->db->distinct();
+    $this->db->select('pcd.id_pago, p.fecha_pago');
+    $this->db->from('ingreso_salida_paquete isp'); 
+    $this->db->join('paquete_contratado_detalle pcd', 'pcd.id_paquete_contratado = isp.id_paquete_contratado OR pcd.id_ingreso_salida_paquete = isp.id_ingreso_salida_paquete', 'inner');
+    $this->db->join('pago p', 'p.id_pago = pcd.id_pago', 'inner');
+    $this->db->where_in('isp.id_ingreso_salida', $idsIngreso);
+    $query = $this->db->get();
+    if ($query->num_rows() > 0) {
+        return $query->result();
+    } else {
+        return array();
+    }
   }
   function calcularDiferenciaHoras($hora1, $hora2) {
     $timestamp1 = strtotime($hora1);
@@ -397,6 +414,7 @@ class daycareModel extends CI_Model {
       $clientes[$key]['mascotas']=$mascotas;
       $clientes[$key]['nombreMascotas']=$mascotasAux;
       $clientes[$key]['idsIngreso']=$idsIngreso;
+      $clientes[$key]['idsPagos']= $this->getPagos($idsIngreso);
       
     }
     return $clientes;
