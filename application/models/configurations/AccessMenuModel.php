@@ -23,9 +23,13 @@ class AccessMenuModel extends CI_Model {
       return $resAccess;
   }
   public function findAllIdUser($idUser) {
-    $this->db->where(['estado' => $idUser])->order_by('numero_orden', 'ASC');
-    $access = $this->db->get($this->table)->result();
-    
+    $this->db->select('ma.*'); 
+    $this->db->from($this->table.' as ma' );
+    $this->db->where('ma.estado','1');
+    $this->db->join('acceso_usuario as au', 'ma.id_menu_acceso = au.id_acceso AND au.id_usuario = '.$this->db->escape($idUser), 'inner');
+    $this->db->where('au.estado','1');
+    $this->db->order_by('numero_orden', 'ASC');
+    $access = $this->db->get()->result();
     $resAccess =  $this->getSubMenu($access,'0',0);
     return $resAccess;
   }
