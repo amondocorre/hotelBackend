@@ -60,6 +60,14 @@ if (!function_exists('validate_http_method')) {
       return true;
   }
 }
+if(!function_exists('verificarDirectorio')){
+	function verificarDirectorio($texto) {
+    $partes = explode('api', $texto, 2); 
+    $primeraParte = isset($partes[0]) ? trim($partes[0], '/') : '';
+    $elementos = explode('/', $primeraParte);
+    return count($elementos) > 1 ? '' : $primeraParte;
+}
+}
 if(!function_exists('getDirectorio')){
 	function getDirectorio(){
 		$nombreCarpeta =  explode('/',$_SERVER['REQUEST_URI'])[1];
@@ -73,9 +81,10 @@ if(!function_exists('getDirectorio')){
 if(!function_exists('getHttpHost')){
 	function getHttpHost(){
 		$nombreCarpeta =  explode('/',$_SERVER['REQUEST_URI'])[1];
+    $directorio = getDirectorio();
 		$url = "http://" .$_SERVER['HTTP_HOST']."/".$nombreCarpeta."/" ;
 		if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS']) {
-			$url = "https://" .$_SERVER['HTTP_HOST']."/";
+			$url = "https://" .$_SERVER['HTTP_HOST']."/".verificarDirectorio($_SERVER['REQUEST_URI']);
 		}
 		return $url;
 	}

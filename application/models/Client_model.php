@@ -20,6 +20,7 @@ class Client_model extends CI_Model {
       $this->db->select("*,CONCAT(nombres, ' ', ap_paterno, ' ', ap_materno) AS nombre_completo"); 
       $this->db->from($this->table); 
       $this->db->where('activo', 1); 
+      $this->db->order_by('nombre_completo', 'ASC');
       $query = $this->db->get();
       if ($query->num_rows() > 0) {
           return $query->result(); 

@@ -65,12 +65,26 @@ class daycareModel extends CI_Model {
     $fechaIngreso = $data->fecha_ingreso;
     $mascotas = $data->mascotas;
     $descuento = $data->descuento;
+    $deudaVen = $data->deudaVen;
     $observaciones = '';
     $idFormaPago = $data->id_forma_pago;
     $idPago = 0;
     if($aCuenta>0){
       $idPago = $this->insertPago($idCliente,$idUsuario,$idTurno,$aCuenta,$descuento,$observaciones,$idFormaPago,$fechaActual);
+      if($deudaVen>0){
+        $deudas  = $this->getDeudasPasadas($idCliente);
+        foreach($deudas as $deuda){
+          $idContrato = $deuda->id_paquete_contratado;
+          $subTotal = $deuda->saldo_pagar;
+            if($aCuenta>0){
+              $monto = round(($subTotal>=$aCuenta?$aCuenta:$subTotal),2);
+              $aCuenta = round(($subTotal>=$aCuenta?0:$aCuenta-$subTotal),2);
+              $this->insertPagoDetalle($monto,$idPago,$idContrato,0);
+            }
+        }
+      }
     }
+    $idIngreso =0;
     foreach($mascotas as $key=>$mascota){
       $idMascota = $mascota->id_mascota;
       $total = 0;
@@ -82,7 +96,7 @@ class daycareModel extends CI_Model {
           $subTotal = $servicio->sub_total;
           $precio = $servicio->precio;
           $subDescuento = $servicio->descuento;
-          $observacion = $servicio->detalle;
+          $observacion = $servicio->detalle??'';
           $dataServicio = $this->ServiceModel->findIdentity($idServicio);
           $diasIncluidos = (int)$dataServicio->dias_incluidos;
           $diasDisponibles = $diasIncluidos;
@@ -99,6 +113,11 @@ class daycareModel extends CI_Model {
           }else{
             $idContrato = $servicio->id_paquete_contratado;
             $this->insertContradoDetalle($idContrato,$idIngreso);
+            if($aCuenta>0){
+              $monto = round(($subTotal>=$aCuenta?$aCuenta:$subTotal),2);
+              $aCuenta = round(($subTotal>=$aCuenta?0:$aCuenta-$subTotal),2);
+              $this->insertPagoDetalle($monto,$idPago,$idContrato,0);
+            }
           }
         }
       }else;
@@ -349,6 +368,19 @@ class daycareModel extends CI_Model {
     $this->db->join('ingreso_salida_paquete as isp', 'isp.id_paquete_contratado = vpc.id_paquete_contratado', 'inner');
     $this->db->where('vpc.id_mascota', $idMascota);
     $this->db->where('isp.id_ingreso_salida', $idIngresoSalida);
+    $query = $this->db->get();
+    if ($query->num_rows() > 0) {
+        return $query->result();
+    } else {
+        return array();
+    }
+  } 
+  public function getDeudasPasadas($idClient) {
+    $this->db->select('vpc.*');
+    $this->db->from('v_paquete_contratado as vpc'); 
+    $this->db->where('vpc.id_cliente', $idClient);
+    $this->db->where('vpc.disponible', 0);
+    $this->db->where('vpc.saldo_pagar >0');
     $query = $this->db->get();
     if ($query->num_rows() > 0) {
         return $query->result();
