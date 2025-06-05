@@ -20,4 +20,16 @@ class DashboardController extends CI_Controller {
     $data = $this->DashboardModel->get_total_clientes();
     echo json_encode($data);
   }
+
+  public function getMascotasEstancia() {
+    $this->load->model('dashboard/DashboardModel');
+    $data = $this->DashboardModel->get_mascotas_estancia();
+    echo json_encode($data);
+  }
+
+  public function getIngresosDiarios() {
+    $this->load->model('dashboard/DashboardModel');
+    $data = $this->DashboardModel->get_ingresos_diarios();
+    echo json_encode($data);
+  }
 }
