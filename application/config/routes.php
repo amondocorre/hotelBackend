@@ -166,3 +166,8 @@ $route['api/config/company/create'] = 'configurations/CompanyController/create';
 $route['api/config/company/update/(:any)'] = 'configurations/CompanyController/update/$1';
 $route['api/config/company/delete/(:any)'] = 'configurations/CompanyController/delete/$1';
 $route['api/config/company/activate/(:any)'] = 'configurations/CompanyController/activate/$1';
+
+//dashboard
+$route['api/dashboard/arrivals-departures'] = 'dashboard/DashboardController/getArrivalsDepartures';
+$route['api/dashboard/occupation'] = 'dashboard/DashboardController/getOccupation';
+$route['api/dashboard/total_clientes'] = 'dashboard/DashboardController/getTotalClientes';
