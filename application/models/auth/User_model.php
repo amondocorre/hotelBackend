@@ -34,7 +34,12 @@ class User_model extends CI_Model {
     }
     // Encuentra un usuario por nombre de usuario
     public function findByUsername($username) {
-        return $this->db->get_where($this->table, ['usuario' => $username])->row();
+      $url = getHttpHost();
+      $this->db->select("id_usuario,usuarios.id_perfil,perfiles.nombre as perfil,usuarios.nombre,password_hash ,email,telefono,celular,usuarios.estado,usuario,CONCAT('$url', foto) as foto,sexo,fecha_nacimiento,direccion,ubicacion_gps");
+      $this->db->join('perfiles', 'usuarios.id_perfil = perfiles.id', 'left'); 
+      $this->db->where('usuario', $username);
+      return $this->db->get($this->table)->row();
+      //return $this->db->get_where($this->table, ['usuario' => $username])->row();
     }
     public function findById($id) {
       return $this->db->get_where($this->table, ['id_usuario' => $id])->row();
@@ -71,7 +76,7 @@ class User_model extends CI_Model {
       }
     }
     public function create($data) {
-        $data['password_hash'] = 'admin';
+        $data['password_hash'] = 'password';
         if (!$this->validate_user_data($data)) {
             return FALSE; 
         }

@@ -108,6 +108,13 @@ $route['api/config/pet/create'] = 'configurations/PetController/create';
 $route['api/config/pet/update/(:any)'] = 'configurations/PetController/update/$1';
 $route['api/config/pet/delete/(:any)'] = 'configurations/PetController/delete/$1';
 $route['api/config/pet/activate/(:any)'] = 'configurations/PetController/activate/$1';
+// Vacunas
+$route['api/config/vaccine/findActive'] = 'configurations/VaccineController/findActive';
+$route['api/config/vaccine/findAll'] = 'configurations/VaccineController/findAll';
+$route['api/config/vaccine/create'] = 'configurations/VaccineController/create';
+$route['api/config/vaccine/update/(:any)'] = 'configurations/VaccineController/update/$1';
+$route['api/config/vaccine/delete/(:any)'] = 'configurations/VaccineController/delete/$1';
+$route['api/config/vaccine/activate/(:any)'] = 'configurations/VaccineController/activate/$1';
 
 //razas
 $route['api/config/breed/findActive'] = 'configurations/BreedController/findActive';
