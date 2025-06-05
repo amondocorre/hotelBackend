@@ -66,7 +66,7 @@ if(!function_exists('verificarDirectorio')){
     $primeraParte = isset($partes[0]) ? trim($partes[0], '/') : '';
     $elementos = explode('/', $primeraParte);
     return count($elementos) > 1 ? '' : $primeraParte;
-}
+  }
 }
 if(!function_exists('getDirectorio')){
 	function getDirectorio(){
