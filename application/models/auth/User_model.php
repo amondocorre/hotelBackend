@@ -11,7 +11,9 @@ class User_model extends CI_Model {
 
     // Encuentra un usuario por ID
     public function findIdentity($id) {
-        return $this->db->get_where($this->table, ['id_usuario' => $id])->row();
+        $user = $this->db->get_where($this->table, ['id_usuario' => $id])->row();
+        unset($user->password_hash);
+        return $user;
     }
 
     // Encuentra un usuario por token de acceso (si lo usas)
