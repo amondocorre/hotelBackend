@@ -175,3 +175,11 @@ $route['api/config/company/delete/(:any)'] = 'configurations/CompanyController/d
 
 //Impresion
 $route['api/impresion/imprimirMovimientoCaja'] = 'Impresion/imprimirMovimientoCaja';
+$route['api/config/company/activate/(:any)'] = 'configurations/CompanyController/activate/$1';
+
+//dashboard
+$route['api/dashboard/arrivals-departures'] = 'dashboard/DashboardController/getArrivalsDepartures';
+$route['api/dashboard/occupation'] = 'dashboard/DashboardController/getOccupation';
+$route['api/dashboard/total_clientes'] = 'dashboard/DashboardController/getTotalClientes';
+$route['api/dashboard/total_mascotas_estancia'] = 'dashboard/DashboardController/getMascotasEstancia';
+$route['api/dashboard/total_ingresos_diarios'] = 'dashboard/DashboardController/getIngresosDiarios';
