@@ -152,7 +152,7 @@ $route['api/caja/update/(:any)'] = 'caja/CajaController/update/$1';
 $route['api/caja/delete/(:any)'] = 'caja/CajaController/delete/$1';
 $route['api/caja/activate/(:any)'] = 'caja/CajaController/activate/$1';
 // caja
-$route['api/caja-movi/findActive'] = 'caja/BoxMovementController/findActive';
+$route['api/caja-movi/findFilter'] = 'caja/BoxMovementController/findFilter';
 $route['api/caja-movi/findAll'] = 'caja/BoxMovementController/findAll';
 $route['api/caja-movi/create'] = 'caja/BoxMovementController/create';
 $route['api/caja-movi/update/(:any)'] = 'caja/BoxMovementController/update/$1';
@@ -174,7 +174,7 @@ $route['api/config/company/update/(:any)'] = 'configurations/CompanyController/u
 $route['api/config/company/delete/(:any)'] = 'configurations/CompanyController/delete/$1';
 
 //Impresion
-$route['api/impresion/imprimirMovimientoCaja'] = 'Impresion/imprimirMovimientoCaja';
+$route['api/impresion/imprimirMovimientoCaja/(:any)'] = 'Impresion/imprimirMovimientoCaja/$1';
 $route['api/config/company/activate/(:any)'] = 'configurations/CompanyController/activate/$1';
 
 //dashboard

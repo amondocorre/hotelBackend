@@ -98,14 +98,16 @@ class BoxMovementController extends CI_Controller {
         return _send_json_response($this, 400, $response);
       }
     }
-    public function findActive() {
-      if (!validate_http_method($this, ['GET'])) return; 
+    public function findFilter() {
+      if (!validate_http_method($this, ['POST'])) return; 
       $res = verifyTokenAccess();
       if(!$res) return; 
-      $user = $res->user;
-      $idUser = $user->id_usuario;
-      $Mascotaes = $this->BoxMovement->findActive($idUser);
-      $response = ['status' => 'success','data'=>$Mascotaes];
+      $data = json_decode(file_get_contents('php://input'), true);
+      $ifecha = $data['ifecha']??'';
+      $ffecha = $data['ffecha']??'';
+      $tipo = $data['tipo']??'';
+      $res = $this->BoxMovement->findFilter($tipo,$ifecha,$ffecha);
+      $response = ['status' => 'success','data'=>$res];
       return _send_json_response($this, 200, $response);
     }
     public function findAll() {

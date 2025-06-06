@@ -11,12 +11,12 @@ class Impresion extends CI_Controller {
     $this->load->model('auth/User_model');
     $this->load->model('caja/BoxMovement');
   } 
-  public function imprimirMovimientoCaja() {
+  public function imprimirMovimientoCaja($idMovimiento) {
    /* if (!validate_http_method($this, ['POST'])) return; 
     $res = verifyTokenAccess();
     if(!$res) return; */
     $data = json_decode(file_get_contents('php://input'), true);
-    $idMovimiento = 12;
+    //$idMovimiento = 12;
     $movi = $this->BoxMovement->findIdentity($idMovimiento);
     if(!$movi){
       return _send_json_response($this, 204 , ['status' => 'error','message'=>'No se encotro el movimiento.']);
