@@ -15,8 +15,13 @@ class PetController extends CI_Controller {
         return;
       }
       $data = json_decode(file_get_contents('php://input'), true);
+      $vaccines = $data['vaccines']??[];
+      unset($data['vaccines']);
+      unset($data['fecha_vigente']);
+      unset($data['fecha_aplicacion']);
       $id = $this->PetModel->create($data);
       if ($id) {
+        $this->PetModel->addVaccines($id, $vaccines);
           $response = ['status' => 'success','message'=>'Mascota creado con éxito.'];
           return _send_json_response($this, 200, $response);
       } else {
@@ -33,7 +38,12 @@ class PetController extends CI_Controller {
           return;
         } 
         $data = json_decode(file_get_contents('php://input'), true);
+        $vaccines = $data['vaccines']??[];
+        unset($data['vaccines']);
+        unset($data['fecha_vigente']);
+        unset($data['fecha_aplicacion']);
         if ($this->PetModel->update($id, $data)) {
+            $this->PetModel->addVaccines($id, $vaccines);
             $response = ['status' => 'success','message'=>'Mascota actualizado con éxito.'];
             return _send_json_response($this, 200, $response);
         } else {
