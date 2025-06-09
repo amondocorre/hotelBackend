@@ -31,7 +31,7 @@ class BoxMovementController extends CI_Controller {
       $data['id_caja'] = $turno->id;
       $id = $this->BoxMovement->create($data);
       if ($id) {
-          $response = ['status' => 'success','message'=>'Se registro con éxito el movimiento de caja.'];
+          $response = ['status' => 'success','message'=>'Se registro con éxito el movimiento de caja.','id'=>$id];
           return _send_json_response($this, 200, $response);
       } else {
         $response = ['status' => 'error', 'message' =>  array_values($this->form_validation->error_array())];

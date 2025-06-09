@@ -41,7 +41,8 @@ class BoxMovement extends CI_Model {
         return FALSE; 
     }
     $data['fecha_movimiento'] = date('Y-m-d H:i:s');
-    return $this->db->insert($this->table, $data);
+    $this->db->insert($this->table, $data);
+    return $this->db->insert_id();
   }
   public function delete($id) {
     $this->db->where('id_movimientos_caja', $id);
