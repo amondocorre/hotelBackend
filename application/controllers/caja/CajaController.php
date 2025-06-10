@@ -25,7 +25,7 @@ class CajaController extends CI_Controller {
       $data['id_usuario'] = $idUser;
       $id = $this->CajaModel->create($data);
       if ($id) {
-          $response = ['status' => 'success','message'=>'Se aperturo con éxito el Turno.'];
+          $response = ['status' => 'success','message'=>'Se aperturo con éxito el Turno.','id'=>$id];
           return _send_json_response($this, 200, $response);
       } else {
         $response = ['status' => 'error', 'message' =>  array_values($this->form_validation->error_array())];
@@ -53,7 +53,7 @@ class CajaController extends CI_Controller {
       }
       $data = json_decode(file_get_contents('php://input'), true);
       if ($this->CajaModel->update($id, $data)) {
-          $response = ['status' => 'success','message'=>'Se cerro el turno con éxito.'];
+          $response = ['status' => 'success','message'=>'Se cerro el turno con éxito.','id'=>$id];
           return _send_json_response($this, 200, $response);
       } else {
         $response = ['status' => 'error', 'message' =>  array_values($this->form_validation->error_array())];

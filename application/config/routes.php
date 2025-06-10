@@ -175,6 +175,8 @@ $route['api/config/company/delete/(:any)'] = 'configurations/CompanyController/d
 
 //Impresion
 $route['api/impresion/imprimirMovimientoCaja/(:any)'] = 'Impresion/imprimirMovimientoCaja/$1';
+$route['api/impresion/imprimirAperturaTurno/(:any)'] = 'Impresion/imprimirAperturaTurno/$1';
+$route['api/impresion/imprimirCierreTurno/(:any)'] = 'Impresion/imprimirCierreTurno/$1';
 $route['api/config/company/activate/(:any)'] = 'configurations/CompanyController/activate/$1';
 
 //dashboard

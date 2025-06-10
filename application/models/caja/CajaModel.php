@@ -40,7 +40,8 @@ class CajaModel extends CI_Model {
   public function create($data) {
     $data['estado'] = 'Abierta';
     $data['fecha_apertura'] = date('Y-m-d H:i:s');
-    return $this->db->insert($this->table, $data);
+    $this->db->insert($this->table, $data);
+    return $this->db->insert_id();
   }
   public function delete($id) {
     $this->db->where('id', $id);

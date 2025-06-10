@@ -36,6 +36,39 @@ class BoxMovement extends CI_Model {
         return array(); 
     }
   }
+  public function getMovimientosById($id_caja){
+    $this->db->select("id_caja,SUM(CASE WHEN tipo = 'Ingreso' THEN monto ELSE 0.00 END) AS Ingreso,SUM(CASE WHEN tipo = 'Egreso' THEN monto ELSE 0.00 END) AS Egreso");
+    $this->db->from($this->table);
+    $this->db->where("id_caja", $id_caja);
+    $this->db->group_by("id_caja");
+    $query = $this->db->get();
+    $result = $query->row_array(); 
+    return $result;
+  }
+  public function getMontoPagoByIds($id_caja,$if_forma_pago){
+    $this->db->select("sum(monto) as monto");
+    $this->db->from('pago');
+    $this->db->where("id_caja", $id_caja);
+    $this->db->where("anulado", 'no');
+    $this->db->where_in("id_forma_pago", $if_forma_pago);
+    $this->db->group_by("id_caja");
+    $query = $this->db->get();
+    $result = $query->row_array(); 
+    $monto = $result['monto']??'0.00';
+    return $monto===null?'0.00':$monto;
+  }
+  public function getMontoPagoOtros($id_caja,$if_forma_pago){
+    $this->db->select("sum(monto) as monto");
+    $this->db->from('pago');
+    $this->db->where("id_caja", $id_caja);
+    $this->db->where("anulado", 'no');
+    $this->db->where_not_in("id_forma_pago", $if_forma_pago);
+    $this->db->group_by("id_caja");
+    $query = $this->db->get();
+    $result = $query->row_array(); 
+    $monto = $result['monto']??'0.00';
+    return $monto===null?'0.00':$monto;
+  }
   public function create($data) {
     if (!$this->validate_movimientos_caja_data($data)) {
         return FALSE; 
