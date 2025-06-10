@@ -333,6 +333,7 @@ class daycareModel extends CI_Model {
           $saldoDeudaVig =0;
           $idServices =[];
           foreach($services as $service){
+            $service->historial = $service->historial?json_decode($service->historial):[];
             if($service->disponible == 0){
               $saldoDeudaVen += $service->saldo_pagar;
               array_push($idServices,$service->id_servicio);
@@ -351,10 +352,27 @@ class daycareModel extends CI_Model {
     }
   }
   public function getServisesByPet($idMascota) {
-    $this->db->select('*');
-    $this->db->from('v_paquete_contratado');
-    $this->db->where('(disponible = 1 OR saldo_pagar > 0)'); 
-    $this->db->where('id_mascota', $idMascota);
+    $this->db->select('vpc.*');
+    $this->db->select("JSON_ARRAYAGG(JSON_OBJECT('id_ingreso_salida', is2.id_ingreso_salida,'fecha_ingreso', is2.fecha_ingreso,'fecha_salida', is2.fecha_salida)) AS historial", false);
+    $this->db->from('v_paquete_contratado vpc');
+    $this->db->join('ingreso_salida is2', 'is2.id_mascota = vpc.id_mascota', 'left');
+    $this->db->join('ingreso_salida_paquete isp', 'isp.id_ingreso_salida = is2.id_ingreso_salida', 'left');
+    $this->db->where('(vpc.disponible = 1 OR vpc.saldo_pagar > 0)');
+    $this->db->where('vpc.id_mascota', $idMascota);
+    $this->db->group_by('vpc.id_paquete_contratado'); 
+    $query = $this->db->get();
+    if ($query->num_rows() > 0) {
+        return $query->result();
+    } else {
+        return array();
+    }
+  }
+  public function getServisesContratoByPet2($idMascota,$idIngresoSalida) {
+    $this->db->select('vpc.*,isp.hora_exedente_nocturno as horaExsedidoNot,isp.hora_exedente_diurno as horaExsedidoDiu,isp.cobro_exedente_nocturno as saldoExsedidoNot,isp.cobro_exedente_diurno as saldoExsedidoDiu');
+    $this->db->from('v_paquete_contratado as vpc'); 
+    $this->db->join('ingreso_salida_paquete as isp', 'isp.id_paquete_contratado = vpc.id_paquete_contratado', 'inner');
+    $this->db->where('vpc.id_mascota', $idMascota);
+    $this->db->where('isp.id_ingreso_salida', $idIngresoSalida);
     $query = $this->db->get();
     if ($query->num_rows() > 0) {
         return $query->result();
@@ -363,11 +381,16 @@ class daycareModel extends CI_Model {
     }
   }
   public function getServisesContratoByPet($idMascota,$idIngresoSalida) {
+    $this->db->select('vpc.*');
     $this->db->select('vpc.*,isp.hora_exedente_nocturno as horaExsedidoNot,isp.hora_exedente_diurno as horaExsedidoDiu,isp.cobro_exedente_nocturno as saldoExsedidoNot,isp.cobro_exedente_diurno as saldoExsedidoDiu');
-    $this->db->from('v_paquete_contratado as vpc'); 
+    $this->db->select("JSON_ARRAYAGG(JSON_OBJECT('id_ingreso_salida', is2.id_ingreso_salida,'fecha_ingreso', is2.fecha_ingreso,'fecha_salida', is2.fecha_salida)) AS historial", false);
+    $this->db->from('v_paquete_contratado vpc');
+    $this->db->join('ingreso_salida is2', 'is2.id_mascota = vpc.id_mascota', 'left');
+    $this->db->join('ingreso_salida_paquete isp2', 'isp2.id_ingreso_salida = is2.id_ingreso_salida', 'left');
     $this->db->join('ingreso_salida_paquete as isp', 'isp.id_paquete_contratado = vpc.id_paquete_contratado', 'inner');
     $this->db->where('vpc.id_mascota', $idMascota);
     $this->db->where('isp.id_ingreso_salida', $idIngresoSalida);
+    $this->db->group_by('vpc.id_paquete_contratado'); 
     $query = $this->db->get();
     if ($query->num_rows() > 0) {
         return $query->result();
@@ -481,6 +504,7 @@ class daycareModel extends CI_Model {
       $horaExsedidoDiu = 0;
       $horaExsedidoNot = 0;
       foreach($services as $service){
+        $service->historial = $service->historial?json_decode($service->historial):[];
         if($service->disponible ==1 && $estado === 'Finalizado'){
           $service->disponible = 0;
         }
@@ -540,5 +564,5 @@ class daycareModel extends CI_Model {
     $data->cliente = $cliente;
     return $data;
   }
-  
+
 }
