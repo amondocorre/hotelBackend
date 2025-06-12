@@ -52,6 +52,30 @@ class daycareModel extends CI_Model {
     $this->db->where('id', $id);
     return $this->db->update($this->table, ['estado'=>'1']);
   }
+  public function rigisterPagoDeuda($idUsuario,$turno,$idClient,$aCuenta,$idFormaPago){
+    //$this->db->trans_rollback();
+    $this->db->trans_start();
+    $fechaActual = date('Y-m-d H:i:s');
+    $idPago = 0;
+    $idTurno = $turno->id;
+    if($aCuenta>0){
+      $idPago = $this->insertPago($idClient,$idUsuario,$idTurno,$aCuenta,0,'',$idFormaPago,$fechaActual);
+      if($idPago){
+        $deudas  = $this->getDeudasPasadas($idClient);
+        foreach($deudas as $deuda){
+          $idContrato = $deuda->id_paquete_contratado;
+          $subTotal = $deuda->saldo_pagar;
+            if($aCuenta>0){
+              $monto = round(($subTotal>=$aCuenta?$aCuenta:$subTotal),2);
+              $aCuenta = round(($subTotal>=$aCuenta?0:$aCuenta-$subTotal),2);
+              $this->insertPagoDetalle($monto,$idPago,$idContrato,0);
+            }
+        }
+      }
+    }
+    $this->db->trans_complete();
+    return $idPago;
+  }
   public function registerIngreso($data,$turno,$idUsuario){
     //$this->db->trans_rollback();
     $this->db->trans_start();
@@ -85,6 +109,7 @@ class daycareModel extends CI_Model {
       }
     }
     $idIngreso =0;
+    $numero = $this->getMAxNumero()+1;
     foreach($mascotas as $key=>$mascota){
       $idMascota = $mascota->id_mascota;
       $total = 0;
@@ -101,7 +126,7 @@ class daycareModel extends CI_Model {
           $diasIncluidos = (int)$dataServicio->dias_incluidos;
           $diasDisponibles = $diasIncluidos;
           if($servicio->editable ==1){
-            $idContrato = $this->insertContrado($idTurno,$idCliente,$idMascota,$idServicio,$fechaActual,$diasDisponibles,$precio,$subDescuento,$subTotal,$observacion);
+            $idContrato = $this->insertContrado($idTurno,$idCliente,$idMascota,$idServicio,$fechaActual,$diasDisponibles,$precio,$subDescuento,$subTotal,$observacion,$numero);
             if($idContrato){
               $this->insertContradoDetalle($idContrato,$idIngreso);
               if($aCuenta>0){
@@ -245,7 +270,7 @@ class daycareModel extends CI_Model {
     $this->db->update('ingreso_salida', $niewData);
     return $this->db->affected_rows(); 
   }
-  public function insertContrado($idCaja,$idCliente,$idMascota,$idServicio,$fechaCompra,$diasDisponibles,$precio,$descuento,$subTotal,$observacion) {
+  public function insertContrado($idCaja,$idCliente,$idMascota,$idServicio,$fechaCompra,$diasDisponibles,$precio,$descuento,$subTotal,$observacion,$numero) {
     $niewData = new stdClass();
     $niewData->id_caja = $idCaja;
     $niewData->id_cliente = $idCliente;
@@ -258,6 +283,7 @@ class daycareModel extends CI_Model {
     $niewData->total_pagar = $subTotal;
     $niewData->observacion = $observacion;
     $niewData->estado = 'Activo';
+    $niewData->numero = $numero;
     $this->db->insert('paquete_contratado', $niewData);
     return $this->db->insert_id();
   }
@@ -353,7 +379,7 @@ class daycareModel extends CI_Model {
   }
   public function getServisesByPet($idMascota) {
     $this->db->select('vpc.*');
-    $this->db->select("JSON_ARRAYAGG(JSON_OBJECT('id_ingreso_salida', is2.id_ingreso_salida,'fecha_ingreso', is2.fecha_ingreso,'fecha_salida', is2.fecha_salida)) AS historial", false);
+    $this->db->select("JSON_ARRAYAGG(JSON_OBJECT('id_ingreso_salida', is2.id_ingreso_salida,'fecha_ingreso', is2.fecha_ingreso,'fecha_salida', is2.fecha_salida) ORDER BY is2.fecha_ingreso ASC) AS historial", false);
     $this->db->from('v_paquete_contratado vpc');
     $this->db->join('ingreso_salida is2', 'is2.id_mascota = vpc.id_mascota', 'left');
     $this->db->join('ingreso_salida_paquete isp', 'isp.id_ingreso_salida = is2.id_ingreso_salida', 'left');
@@ -366,6 +392,12 @@ class daycareModel extends CI_Model {
     } else {
         return array();
     }
+  }
+  public function getMAxNumero() {
+    $this->db->select_max('numero');
+    $query = $this->db->get('paquete_contratado');
+    $result = $query->row();
+    return $result->numero??0;
   }
   public function getServisesContratoByPet2($idMascota,$idIngresoSalida) {
     $this->db->select('vpc.*,isp.hora_exedente_nocturno as horaExsedidoNot,isp.hora_exedente_diurno as horaExsedidoDiu,isp.cobro_exedente_nocturno as saldoExsedidoNot,isp.cobro_exedente_diurno as saldoExsedidoDiu');
@@ -383,7 +415,7 @@ class daycareModel extends CI_Model {
   public function getServisesContratoByPet($idMascota,$idIngresoSalida) {
     $this->db->select('vpc.*');
     $this->db->select('vpc.*,isp.hora_exedente_nocturno as horaExsedidoNot,isp.hora_exedente_diurno as horaExsedidoDiu,isp.cobro_exedente_nocturno as saldoExsedidoNot,isp.cobro_exedente_diurno as saldoExsedidoDiu');
-    $this->db->select("JSON_ARRAYAGG(JSON_OBJECT('id_ingreso_salida', is2.id_ingreso_salida,'fecha_ingreso', is2.fecha_ingreso,'fecha_salida', is2.fecha_salida)) AS historial", false);
+    $this->db->select("JSON_ARRAYAGG(JSON_OBJECT('id_ingreso_salida', is2.id_ingreso_salida,'fecha_ingreso', is2.fecha_ingreso,'fecha_salida', is2.fecha_salida) ORDER BY is2.fecha_ingreso ASC) AS historial", false);
     $this->db->from('v_paquete_contratado vpc');
     $this->db->join('ingreso_salida is2', 'is2.id_mascota = vpc.id_mascota', 'left');
     $this->db->join('ingreso_salida_paquete isp2', 'isp2.id_ingreso_salida = is2.id_ingreso_salida', 'left');

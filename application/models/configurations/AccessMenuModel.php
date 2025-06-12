@@ -80,12 +80,12 @@ class AccessMenuModel extends CI_Model {
   public function addButtons($id,$buttons){
     $stateButton = false;
     $this->db->where('id_acceso', $id);
-    $stateButton = $this->db->update('acceso_boton', 'estado',0);
+    $stateButton = $this->db->update('acceso_boton', ['estado'=>0]);
     foreach($buttons as $key=>$button){
       if($this->findButtonAcces($id,$button) ){
         $this->db->where('id_acceso', $id);
         $this->db->where('id_boton', $button);
-        $stateButton = $this->db->update('acceso_boton', 'estado',1);
+        $stateButton = $this->db->update('acceso_boton', ['estado'=>1]);
       }else{
         $niewButton['id_acceso'] = $id;
         $niewButton['id_boton'] = $button;

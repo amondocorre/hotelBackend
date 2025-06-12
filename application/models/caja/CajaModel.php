@@ -57,4 +57,24 @@ class CajaModel extends CI_Model {
     $this->db->where('id', $id);
     return $this->db->update($this->table, $data);
   }
+  public function reportCierreTurno($idUsuario,$ifecha,$ffecha){
+    $this->db->select("c.*, nombre as usuario,
+      COALESCE((SELECT SUM(p.monto) FROM pago p WHERE p.id_caja = c.id AND p.anulado = 'no' AND p.id_forma_pago = 1), 0.00) AS efectivo,
+       COALESCE((SELECT SUM(p.monto) FROM pago p WHERE p.id_caja = c.id AND p.anulado = 'no' AND p.id_forma_pago IN (2,3)), 0.00) AS transferencia,
+       COALESCE((SELECT SUM(p.monto) FROM pago p WHERE p.id_caja = c.id AND p.anulado = 'no' AND p.id_forma_pago not IN (1,2,3)), 0.00) AS otros,
+       COALESCE((SELECT SUM(mc.monto) FROM movimientos_caja mc WHERE mc.id_caja = c.id AND mc.tipo = 'Ingreso' ), 0.00) AS ingresos,
+       COALESCE((SELECT SUM(mc.monto) FROM movimientos_caja mc WHERE mc.id_caja = c.id AND mc.tipo = 'Engreso' ), 0.00) AS egresos");
+    $this->db->from($this->table.' as c');
+    $this->db->where("fecha_apertura >= '$ifecha'");
+    $this->db->where("fecha_apertura <= '$ffecha 23:59:59'");
+    $this->db->where("'All'='$idUsuario' or c.id_usuario = '$idUsuario'");
+    $this->db->join('usuarios as u','u.id_usuario = c.id_usuario','inner');
+    $this->db->order_by('fecha_apertura desc');
+    $query = $this->db->get();
+    if ($query->num_rows() > 0) {
+        return $query->result(); 
+    } else {
+        return array(); 
+    }
+  }
 }

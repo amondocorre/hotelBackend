@@ -35,12 +35,12 @@ class MenuAccessController extends CI_Controller {
         $res = verifyTokenAccess();
         if(!$res){
           return;
-        } 
+        }  
         $data = json_decode(file_get_contents('php://input'), true);
         $buttons = $data['id_botones'];
         unset($data['id_botones']);
         if ($this->AccessMenuModel->update($id, $data)) {
-            if (count($buttons)>0 && $this->AccessMenuModel->addButtons($id,$buttons)) { 
+            if (count($buttons)>=0 && $this->AccessMenuModel->addButtons($id,$buttons)) { 
             }
             $response = ['status' => 'success','message'=>'Acceso actualizado con éxito.'];
             return _send_json_response($this, 200, $response);

@@ -166,6 +166,7 @@ $route['api/daycare/registerIngreso'] = 'DaycareController/registerIngreso';
 $route['api/daycare/getDaycareById/(:any)'] = 'DaycareController/getDaycareById/$1';
 $route['api/daycare/getDaycareById2/(:any)'] = 'DaycareController/getDaycareById2/$1';
 $route['api/daycare/registerSalida'] = 'DaycareController/registerSalida';
+$route['api/daycare/rigisterPagoDeuda'] = 'DaycareController/rigisterPagoDeuda';
 
 $route['api/config/company/findActive'] = 'configurations/CompanyController/findActive';
 $route['api/config/company/findAll'] = 'configurations/CompanyController/findAll';
@@ -178,6 +179,11 @@ $route['api/impresion/imprimirMovimientoCaja/(:any)'] = 'Impresion/imprimirMovim
 $route['api/impresion/imprimirAperturaTurno/(:any)'] = 'Impresion/imprimirAperturaTurno/$1';
 $route['api/impresion/imprimirCierreTurno/(:any)'] = 'Impresion/imprimirCierreTurno/$1';
 $route['api/config/company/activate/(:any)'] = 'configurations/CompanyController/activate/$1';
+
+// reportes 
+$route['api/report/reportCierreTurno'] = 'reports/ReportController/reportCierreTurno';
+$route['api/report/reportContratos'] = 'reports/ReportController/reportContratos';
+$route['api/report/reportContratoDeudas'] = 'reports/ReportController/reportContratoDeudas';
 
 //dashboard
 $route['api/dashboard/arrivals-departures'] = 'dashboard/DashboardController/getArrivalsDepartures';

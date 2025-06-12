@@ -12,6 +12,34 @@ class DaycareController extends CI_Controller {
         $this->load->library('pdf');
     } 
     
+    public function rigisterPagoDeuda() {
+      if (!validate_http_method($this, ['POST'])) return; 
+      $res = verifyTokenAccess();
+      if(!$res) return; 
+      $data = json_decode(file_get_contents('php://input'), true);
+      $idClient = $data['idClient']??0;
+      $aCuenta = $data['aCuenta']??'';
+      $idFormaPago = $data['idFormaPago']??'';
+      $user = $res->user;
+      $idUser = $user->id_usuario;
+      $turno = $this->CajaModel->findActive($idUser);
+      if (!$turno) {
+        $response = ['status' => 'error','message'=>'No se encontro ningun turno abierto.'];
+        return _send_json_response($this, 400, $response);
+      }
+      if (!$turno->myTurno) {
+        $response = ['status' => 'error','message'=>'Solo el usuario que aperturo puede realizar el registro.'];
+        return _send_json_response($this, 400, $response);
+      }
+      $id = $this->DaycareModel->rigisterPagoDeuda($idUser,$turno,$idClient,$aCuenta,$idFormaPago);
+      if ($id) {
+        $response = ['status' => 'success','message'=>'Se registro con éxito el pago.','idPago'=>$id];
+        return _send_json_response($this, 200, $response);
+      } else {
+        $response = ['status' => 'error', 'message' =>  'Ocurrio un error al intentar registrar el pago.'];
+        return _send_json_response($this, 400, $response);
+      }
+    }
     public function registerIngreso() {
       if (!validate_http_method($this, ['POST'])) {
         return; 
