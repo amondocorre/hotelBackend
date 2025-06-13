@@ -74,7 +74,13 @@ class daycareModel extends CI_Model {
       }
     }
     $this->db->trans_complete();
-    return $idPago;
+    if ($this->db->trans_status() === FALSE) {
+      $this->db->trans_rollback();
+      return 0;
+    } else {
+        return $idPago;
+    }
+    
   }
   public function registerIngreso($data,$turno,$idUsuario){
     //$this->db->trans_rollback();

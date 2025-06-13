@@ -65,9 +65,12 @@ class CajaModel extends CI_Model {
        COALESCE((SELECT SUM(mc.monto) FROM movimientos_caja mc WHERE mc.id_caja = c.id AND mc.tipo = 'Ingreso' ), 0.00) AS ingresos,
        COALESCE((SELECT SUM(mc.monto) FROM movimientos_caja mc WHERE mc.id_caja = c.id AND mc.tipo = 'Engreso' ), 0.00) AS egresos");
     $this->db->from($this->table.' as c');
-    $this->db->where("fecha_apertura >= '$ifecha'");
+    $this->db->where("fecha_apertura >= '$ifecha 00:00.00'");
     $this->db->where("fecha_apertura <= '$ffecha 23:59:59'");
-    $this->db->where("'All'='$idUsuario' or c.id_usuario = '$idUsuario'");
+    //$this->db->where("'All'='$idUsuario' or c.id_usuario = '$idUsuario'");
+    if ($idUsuario !== 'All') {
+      $this->db->where("c.id_usuario", $idUsuario);
+    }
     $this->db->join('usuarios as u','u.id_usuario = c.id_usuario','inner');
     $this->db->order_by('fecha_apertura desc');
     $query = $this->db->get();
