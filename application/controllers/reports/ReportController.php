@@ -66,7 +66,7 @@ class ReportController extends CI_Controller {
     $this->db->close();
     $this->db->initialize();
     foreach($clientes as $key=>$cliente){
-      $clientes[$key]['detalle'] = $cliente['detalle']?json_decode($cliente['detalle']):[];
+      $clientes[$key]['detalle'] = $cliente['detalle']?json_decode(utf8_encode($cliente['detalle'])):[];
     }
     $response = ['status' => 'success','data'=>$clientes];
     return _send_json_response($this, 200, $response);
@@ -89,7 +89,7 @@ class ReportController extends CI_Controller {
     $this->db->close();
     $this->db->initialize();
     foreach($clientes as $key=>$cliente){
-      $clientes[$key]['detalle'] = $cliente['detalle']?json_decode($cliente['detalle']):[];
+      $clientes[$key]['detalle'] = $cliente['detalle']?json_decode(utf8_encode($cliente['detalle'])):[];
     }
     $response = ['status' => 'success','data'=>$clientes];
     return _send_json_response($this, 200, $response);

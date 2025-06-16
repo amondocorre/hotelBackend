@@ -60,11 +60,11 @@ class DaycareController extends CI_Controller {
         return _send_json_response($this, 400, $response);
       }
       $data = json_decode(file_get_contents('php://input'), false);
-      $idIngreso = $this->DaycareModel->registerIngreso($data,$turno,$idUser);
-      if ($idIngreso) {
-          $idIngreso = $idIngreso==true?0:$idIngreso;
-          $response = ['status' => 'success','message'=>'Se registro con éxito el ingreso.','idIngreso'=>$idIngreso];
-          return _send_json_response($this, 200, $response);
+      $response = $this->DaycareModel->registerIngreso($data,$turno,$idUser);
+      if ($response->status) {
+        $response->status = 'success';
+        $response->message='Se registro con éxito el ingreso.';
+        return _send_json_response($this, 200, $response);
       } else {
         $response = ['status' => 'error', 'message' =>  'Ocurrio un error al intentar registrar el ingreso.'];
         return _send_json_response($this, 400, $response);
@@ -90,11 +90,11 @@ class DaycareController extends CI_Controller {
         return _send_json_response($this, 400, $response);
       }
       $data = json_decode(file_get_contents('php://input'), false);
-      $idIngreso = $this->DaycareModel->registerSalida($data,$turno,$idUser);
-      if ($idIngreso) {
-          $idIngreso = $idIngreso==true?0:$idIngreso;
-          $response = ['status' => 'success','message'=>'Se registro con éxito la salida.','idIngreso'=>$idIngreso];
-          return _send_json_response($this, 200, $response);
+      $response = $this->DaycareModel->registerSalida($data,$turno,$idUser);
+      if ($response->status) {
+        $response->status = 'success';
+        $response->message='Se registro con éxito la salida.';
+        return _send_json_response($this, 200, $response);
       } else {
         $response = ['status' => 'error', 'message' =>  'Ocurrio un error al intentar registrar la salida.'];
         return _send_json_response($this, 400, $response);

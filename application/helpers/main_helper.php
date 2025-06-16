@@ -114,41 +114,50 @@ if(!function_exists('guardarArchivo')){
         return false;
     }
 	}
-  if (!function_exists('email_unique_current')) {
-    function email_unique_current($email, $user_id) {
-        $CI =& get_instance();
-        $CI->db->where('email', $email);
-        $CI->db->where('id_usuario !=', $user_id);
-        $query = $CI->db->get('usuarios');
-        return $query->num_rows() === 0; 
-    }
-  }
-  if (!function_exists('usuario_unique_current')) {
-    function usuario_unique_current($usuario, $user_id) {
+}
+if (!function_exists('email_unique_current')) {
+  function email_unique_current($email, $user_id) {
       $CI =& get_instance();
-      $CI->db->where('usuario', $usuario);
-      $CI->db->where('id_usuario !=', $user_id); 
+      $CI->db->where('email', $email);
+      $CI->db->where('id_usuario !=', $user_id);
       $query = $CI->db->get('usuarios');
       return $query->num_rows() === 0; 
-    }
   }
+}
+if (!function_exists('usuario_unique_current')) {
+  function usuario_unique_current($usuario, $user_id) {
+    $CI =& get_instance();
+    $CI->db->where('usuario', $usuario);
+    $CI->db->where('id_usuario !=', $user_id); 
+    $query = $CI->db->get('usuarios');
+    return $query->num_rows() === 0; 
+  }
+}
 
-  if (!function_exists('perfil_unique_current')) {
-    function perfil_unique_current($nombre, $id_perfil) {
-        $CI =& get_instance();
-        $CI->db->where('nombre', $nombre);
-        $CI->db->where('id !=', $id_perfil);
-        $query = $CI->db->get('perfiles');
-        return $query->num_rows() === 0; 
-    }
+if (!function_exists('perfil_unique_current')) {
+  function perfil_unique_current($nombre, $id_perfil) {
+      $CI =& get_instance();
+      $CI->db->where('nombre', $nombre);
+      $CI->db->where('id !=', $id_perfil);
+      $query = $CI->db->get('perfiles');
+      return $query->num_rows() === 0; 
   }
-  if (!function_exists('email_unique_client')) {
-    function email_unique_client($email, $id_client) {
-        $CI =& get_instance();
-        $CI->db->where('email', $email);
-        $CI->db->where('id_cliente !=', $id_client);
-        $query = $CI->db->get('cliente');
-        return $query->num_rows() === 0; 
-    }
+}
+if (!function_exists('email_unique_client')) {
+  function email_unique_client($email, $id_client) {
+      $CI =& get_instance();
+      $CI->db->where('email', $email);
+      $CI->db->where('id_cliente !=', $id_client);
+      $query = $CI->db->get('cliente');
+      return $query->num_rows() === 0; 
+  }
+}
+if (!function_exists('construirLiteral')) {
+	function construirLiteral($monto){
+    $formatterDE = new NumberFormatter("es", NumberFormatter::SPELLOUT);
+    $literal = $formatterDE->format((int)$monto);
+    $fraccion_pago=round(($monto-intval($monto))*100);
+    $fraccion = $fraccion_pago<=9? '0'.$fraccion_pago: $fraccion_pago;
+    return mb_strtoupper($literal,'UTF-8').' '.$fraccion.'/100';
   }
 }

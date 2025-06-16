@@ -80,7 +80,6 @@ class daycareModel extends CI_Model {
     } else {
         return $idPago;
     }
-    
   }
   public function registerIngreso($data,$turno,$idUsuario){
     //$this->db->trans_rollback();
@@ -115,6 +114,7 @@ class daycareModel extends CI_Model {
       }
     }
     $idIngreso =0;
+    $estdoNumero = false;
     $numero = $this->getMAxNumero()+1;
     foreach($mascotas as $key=>$mascota){
       $idMascota = $mascota->id_mascota;
@@ -132,6 +132,7 @@ class daycareModel extends CI_Model {
           $diasIncluidos = (int)$dataServicio->dias_incluidos;
           $diasDisponibles = $diasIncluidos;
           if($servicio->editable ==1){
+            $estdoNumero = true;
             $idContrato = $this->insertContrado($idTurno,$idCliente,$idMascota,$idServicio,$fechaActual,$diasDisponibles,$precio,$subDescuento,$subTotal,$observacion,$numero);
             if($idContrato){
               $this->insertContradoDetalle($idContrato,$idIngreso);
@@ -154,7 +155,11 @@ class daycareModel extends CI_Model {
       }else;
     }
     $this->db->trans_complete();
-    return $idIngreso?$idIngreso:true;;
+    $response = new stdClass();
+    $response->status = true;
+    $response->idPago = $idPago;
+    $response->numero = $estdoNumero?$numero:0;
+    return $response;
   }
   public function registerSalida($data,$turno,$idUsuario){
     //$this->db->trans_rollback();
@@ -245,7 +250,12 @@ class daycareModel extends CI_Model {
       }else;
     }
     $this->db->trans_complete();
-    return $idIngreso?$idIngreso:true;
+    $this->db->trans_complete();
+    $response = new stdClass();
+    $response->status = true;
+    $response->idPago = $idPago;
+    $response->numero = 0;
+    return $response;
   }
   public function insertIngreso($idCaja,$idMascota,$idCliente,$fechaIngreso,$total) {
     $niewData = new stdClass();
