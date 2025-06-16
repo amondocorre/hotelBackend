@@ -102,12 +102,11 @@ class Impresion extends CI_Controller {
     //return _send_json_response($this, 200, $response);
     
   }
-  public function imprimirNotaVenta($id) {
+  public function imprimirNotaVenta($numero) {
     if (!validate_http_method($this, ['POST'])) return; 
     $res = verifyTokenAccess();
     if(!$res) return; 
     $data = json_decode(file_get_contents('php://input'), true);
-    $numero = 13;
     $sql = "CALL getNotaVenta(?)";
     $query = $this->db->query($sql, [$numero]);
     $notaVenta = $query->result();
@@ -145,16 +144,18 @@ class Impresion extends CI_Controller {
     $this->db->close();
     $this->db->initialize();
     $url = getHttpHost();
+    if(!$pago)return;
     $pago = $pago[0] ?? null;
     $company = $this->Company->findIdentity(1);
     $objeto = new stdClass();
-    $pago->detalle = $pago->detalle?json_decode(utf8_encode($pago->detalle)):[];
+    $pago->detalle = isset($pago->detalle)?json_decode(utf8_encode($pago->detalle)):[];
     $pago->literal = construirLiteral($pago->monto);
     $pago->empresa = strtoupper($company->nombre??'');
     $pago->direccion = $company->direccion??'';
     $pago->nit = $company->nit??'';
     $pago->celular = $company->celular??'';
     $pago->numero = $idPago;
+    $pago->montoAtraso = number_format($pago->montoAtraso,2);
     $pago->fecha = date('d-m-Y', strtotime($pago->fecha));
     $pago->hora = date('h:i:s A', strtotime($pago->fecha));
     $pago->logo = $company->logo_impresion?$url.$company->logo_impresion:'';

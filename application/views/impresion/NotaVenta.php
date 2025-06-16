@@ -51,12 +51,12 @@ $pdf->setFontSubsetting(true);
   $pdf->Cell(0, 7, "NOTA DE VENTA N°: $data->numero", 0, 1, 'C');
   
   $pdf->SetFont('helvetica', 'B', 10);
-  $pdf->Cell(37, 5, "FECHA: ", 0, 0, 'R');
+  $pdf->Cell(37, 5, "FECHA:", 0, 0, 'R');
   $pdf->SetFont('helvetica', '',9);
   $pdf->Cell(37, 5, "$data->fecha $data->hora", 0, 1, 'L');
   
   $pdf->SetFont('helvetica', 'B', 10);
-  $pdf->Cell(37, 5, "Operario: ", 0, 0, 'R');
+  $pdf->Cell(37, 5, "Operario:", 0, 0, 'R');
   $pdf->SetFont('helvetica', '',10);
   $pdf->Cell(37, 5, "$data->usuario", 0, 1, 'L');
   
@@ -99,9 +99,9 @@ $pdf->setFontSubsetting(true);
     $yFinal2 = $pdf->GetY(); 
     $yFinal = $yFinal2>$yFinal?$yFinal2:$yFinal;
     $pdf->SetXY($x + 40, $yInicial);
-    $pdf->Cell(10, $tam, $servicio->precio_servicio, 0, 0, 'C');
-    $pdf->Cell(10, $tam, $servicio->descuento, 0, 0, 'C');
-    $pdf->Cell(10, $tam, $servicio->total_pagar, 0, 1, 'C');
+    $pdf->Cell(10, $tam, number_format($servicio->precio_servicio,2), 0, 0, 'C');
+    $pdf->Cell(10, $tam, number_format($servicio->descuento,2), 0, 0, 'C');
+    $pdf->Cell(10, $tam, number_format($servicio->total_pagar,2), 0, 1, 'C');
     if((($yFinal-$yInicial)/$tam)-1>=0.4){
         $x = $pdf->GetX();
         $pdf->SetXY($x, $yFinal);
@@ -113,17 +113,17 @@ $pdf->setFontSubsetting(true);
   $pdf->SetFont('helvetica', 'B', 10);
   $pdf->Cell(55, 5, "SUBTOTAL: Bs", 0, 0, 'R');
   $pdf->SetFont('helvetica', '', 10);
-  $pdf->Cell(20, 5, "$data->sub_total", 0, 1, 'L');
+  $pdf->Cell(20, 5, number_format($data->sub_total,2), 0, 1, 'L');
 
   $pdf->SetFont('helvetica', 'B', 10);
   $pdf->Cell(55, 5, "DESCUENTO: Bs", 0, 0, 'R');
   $pdf->SetFont('helvetica', '', 10);
-  $pdf->Cell(20, 5, "$data->total_descuento", 0, 1, 'L');
+  $pdf->Cell(20, 5, number_format($data->total_descuento,2), 0, 1, 'L');
 
   $pdf->SetFont('helvetica', 'B', 10);
   $pdf->Cell(55, 5, "TOTAL A PAGAR: Bs", 0, 0, 'R');
   $pdf->SetFont('helvetica', '', 10);
-  $pdf->Cell(20, 5, "$data->total_pagar", 0, 1, 'L');
+  $pdf->Cell(20, 5, "".number_format($data->total_pagar,2), 0, 1, 'L');
   $pdf->Output('movimiento_caja.pdf', 'I');
 
 ?>

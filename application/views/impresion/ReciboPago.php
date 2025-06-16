@@ -10,8 +10,8 @@ class MYPDF extends TCPDF
     }
 }
 $data = json_decode($json);
-$candaDet = count($data->detalle);
-$pageLayout = array(80, 160+($candaDet*5));
+$candaDet = isset($data->detalle )?count($data->detalle):0;
+$pageLayout = array(80, 170+($candaDet*5));
 $pdf = new MYPDF('P', 'mm', $pageLayout, true, 'UTF-8', false);
 //$pdf->SetAutoPageBreak(true, 10); 
 $pdf->SetCreator(PDF_CREATOR);
@@ -51,11 +51,11 @@ $pdf->setFontSubsetting(true);
   $pdf->Cell(0, 7, "RECIBO DE PAGO N°: $data->numero", 0, 1, 'C');
   
   $pdf->SetFont('helvetica', 'B', 10);
-  $pdf->Cell(37, 5, "FECHA: ", 0, 0, 'R');
+  $pdf->Cell(37, 5, "FECHA:", 0, 0, 'R');
   $pdf->SetFont('helvetica', '',9);
   $pdf->Cell(37, 5, "$data->fecha $data->hora", 0, 1, 'L');
   $pdf->SetFont('helvetica', 'B', 10);
-  $pdf->Cell(37, 5, "Operario: ", 0, 0, 'R');
+  $pdf->Cell(37, 5, "Operario:", 0, 0, 'R');
   $pdf->SetFont('helvetica', '',10);
   $pdf->Cell(37, 5, "$data->usuario", 0, 1, 'L');
 
@@ -89,11 +89,17 @@ $pdf->setFontSubsetting(true);
   $y = $pdf->GetY();
   $pdf->SetXY(3, $y);
   $tam = 5;
-  foreach($data->detalle as $key => $detalle){
-    $pdf->Cell(9, $tam, $key+1, 0, 0, 'C');
-    $pdf->Cell(35, $tam, $detalle->numero, 0, 0, 'C');
-    $pdf->Cell(30, $tam, $detalle->monto, 0, 1, 'C');
+  if(isset($data->detalle)){
+    foreach($data->detalle as $key => $detalle){
+      $pdf->Cell(9, $tam, $key+1, 0, 0, 'C');
+      $pdf->Cell(35, $tam, $detalle->numero, 0, 0, 'C');
+      $pdf->Cell(30, $tam, number_format($detalle->monto,2), 0, 1, 'C');
+    }
   }
+  $pdf->SetFont('helvetica', 'B', 10);
+  $pdf->Cell(37, 5, "Pago por atrasos:", 0, 0, 'R');
+  $pdf->SetFont('helvetica', '', 10);
+  $pdf->Cell(37, 5, " Bs $data->montoAtraso", 0, 1, 'L');
   $pdf->SetFont('helvetica', 'B', 11);
   $pdf->Cell(0, 2, "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -", 0, 1, 'C');
 
