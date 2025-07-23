@@ -17,3 +17,9 @@ $hook['post_controller_constructor'][] = [
   'filename' => 'cors.php',
   'filepath' => 'hooks'
 ];
+$hook['pre_system'][] = array(
+    'class'    => '',
+    'function' => 'set_no_cache_headers',
+    'filename' => 'nocache.php',
+    'filepath' => 'hooks'
+);
