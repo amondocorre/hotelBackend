@@ -18,7 +18,7 @@ $hook['post_controller_constructor'][] = [
   'filepath' => 'hooks'
 ];
 $hook['pre_system'][] = array(
-    'class'    => '',
+    'class'    => 'Nocache',
     'function' => 'set_no_cache_headers',
     'filename' => 'nocache.php',
     'filepath' => 'hooks'
