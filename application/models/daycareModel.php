@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class daycareModel extends CI_Model {
+class DaycareModel extends CI_Model {
   protected $table = 'ingreso_salida'; 
   public function __construct() {
       parent::__construct();
